@@ -65,7 +65,7 @@ def register_step2_view(request):
             from .models import PersonalProfile
             PersonalProfile.objects.get_or_create(user=user)
             messages.success(request, f"Registration complete! Welcome, {request.user.gamer_tag}!")
-            return redirect('profile')
+            return redirect('dashboard')
         else:
             # If the form is invalid (e.g. gamer_tag became taken between check and submit)
             # we should still show the step 2 page.
@@ -84,7 +84,7 @@ def login_view(request):
             if user is not None:
                 login(request, user)
                 messages.info(request, f"You are now logged in as {user.username}.")
-                return redirect('profile')
+                return redirect('dashboard')
             else:
                 messages.error(request, "Invalid email or PIN.")
         else:

@@ -152,23 +152,29 @@
         </div>
 
         <!-- Mobile Menu Container -->
-        <div id="mobile-menu" class="hidden fixed top-20 left-0 w-full h-[calc(100vh-5rem)] glass border-t border-white/5 z-40 overflow-y-auto animate-in slide-in-from-top-full duration-300">
+        <div id="mobile-menu"
+            class="hidden fixed top-20 left-0 w-full h-[calc(100vh-5rem)] glass border-t border-white/5 z-40 overflow-y-auto animate-in slide-in-from-top-full duration-300">
             <div class="p-6 flex flex-col gap-6">
                 {% if user.is_authenticated %}
                 <div class="flex flex-col gap-4">
-                    <a href="{% url 'dashboard' %}" class="flex items-center gap-3 text-lg font-bold text-slate-300 hover:text-primary transition-colors">
+                    <a href="{% url 'dashboard' %}"
+                        class="flex items-center gap-3 text-lg font-bold text-slate-300 hover:text-primary transition-colors">
                         <i class="fas fa-home w-8 text-primary"></i> Dashboard
                     </a>
-                    <a href="{% url 'leaderboard' %}" class="flex items-center gap-3 text-lg font-bold text-slate-300 hover:text-primary transition-colors">
+                    <a href="{% url 'leaderboard' %}"
+                        class="flex items-center gap-3 text-lg font-bold text-slate-300 hover:text-primary transition-colors">
                         <i class="fas fa-trophy w-8 text-primary"></i> Leaderboard
                     </a>
-                    <a href="{% url 'recruitment_center' %}" class="flex items-center gap-3 text-lg font-bold text-slate-300 hover:text-primary transition-colors">
+                    <a href="{% url 'recruitment_center' %}"
+                        class="flex items-center gap-3 text-lg font-bold text-slate-300 hover:text-primary transition-colors">
                         <i class="fas fa-users-rays w-8 text-primary"></i> Recruitment
                     </a>
-                    <a href="{% url 'notifications' %}" class="flex items-center gap-3 text-lg font-bold text-slate-300 hover:text-primary transition-colors">
+                    <a href="{% url 'notifications' %}"
+                        class="flex items-center gap-3 text-lg font-bold text-slate-300 hover:text-primary transition-colors">
                         <i class="fas fa-bell w-8 text-primary"></i> Notifications
                         {% if unread_count > 0 %}
-                        <span class="bg-primary text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-full">{{ unread_count }}</span>
+                        <span class="bg-primary text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-full">{{
+                            unread_count }}</span>
                         {% endif %}
                     </a>
                 </div>
@@ -177,7 +183,8 @@
 
                 <div class="flex flex-col gap-4">
                     {% if user.is_staff %}
-                    <a href="{% url 'admin_dashboard' %}" class="flex items-center gap-3 text-lg font-bold text-secondary">
+                    <a href="{% url 'admin_dashboard' %}"
+                        class="flex items-center gap-3 text-lg font-bold text-secondary">
                         <i class="fas fa-shield-halved w-8"></i> Staff HQ
                     </a>
                     {% endif %}
@@ -190,8 +197,11 @@
                 </div>
                 {% else %}
                 <div class="flex flex-col gap-4">
-                    <a href="{% url 'login' %}" class="w-full py-4 text-center font-bold text-white glass rounded-2xl">Login</a>
-                    <a href="{% url 'register' %}" class="w-full py-4 text-center font-bold text-slate-950 bg-primary rounded-2xl shadow-xl shadow-primary/20">Enlist Now</a>
+                    <a href="{% url 'login' %}"
+                        class="w-full py-4 text-center font-bold text-white glass rounded-2xl">Login</a>
+                    <a href="{% url 'register' %}"
+                        class="w-full py-4 text-center font-bold text-slate-950 bg-primary rounded-2xl shadow-xl shadow-primary/20">Enlist
+                        Now</a>
                 </div>
                 {% endif %}
             </div>
@@ -217,14 +227,54 @@
         {% block content %}{% endblock %}
     </main>
 
-    <a href="https://wa.me/254742134431?text=hey,%20how%20do%20i%20join%20cod%20competition" target="_blank"
-        class="fixed bottom-28 right-6 z-[100] w-16 h-16 bg-[#25D366] hover:bg-[#128C7E] text-white rounded-2xl flex items-center justify-center shadow-2xl shadow-green-500/20 transition-all hover:scale-105 active:scale-95 group">
-        <i class="fab fa-whatsapp text-3xl"></i>
-        <span
-            class="absolute right-20 bg-slate-900 border border-white/10 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest text-white whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-            Contact Support
-        </span>
-    </a>
+    <!-- Support Hub -->
+    <div class="fixed bottom-6 right-6 z-[100] flex flex-col items-end gap-4">
+        <!-- Support Menu -->
+        <div id="support-menu" class="hidden flex flex-col gap-3 mb-2 animate-in slide-in-from-bottom-5 duration-300">
+            <!-- WhatsApp Option -->
+            <a href="https://wa.me/254742134431?text=hey,%20how%20do%20i%20join%20cod%20competition" target="_blank"
+                class="flex items-center gap-3 glass px-4 py-3 rounded-2xl border-white/10 hover:bg-green-500/10 hover:border-green-500/50 transition-all group/wa shadow-2xl">
+                <div
+                    class="w-10 h-10 bg-[#25D366] text-white rounded-xl flex items-center justify-center shadow-lg shadow-green-500/20">
+                    <i class="fab fa-whatsapp text-xl"></i>
+                </div>
+                <div class="flex flex-col">
+                    <span
+                        class="text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none mb-1">Human
+                        Intelligence</span>
+                    <span class="text-sm font-bold text-white group-hover/wa:text-[#25D366] transition-colors">WhatsApp
+                        Support</span>
+                </div>
+            </a>
+
+            <!-- AI Strategist Option -->
+            <button onclick="toggleAIChat()"
+                class="flex items-center gap-3 glass px-4 py-3 rounded-2xl border-white/10 hover:bg-primary/10 hover:border-primary/50 transition-all group/ai shadow-2xl">
+                <div
+                    class="w-10 h-10 bg-primary text-slate-950 rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
+                    <i class="fas fa-robot text-xl"></i>
+                </div>
+                <div class="flex flex-col items-start">
+                    <span
+                        class="text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none mb-1">Tactical
+                        AI</span>
+                    <span
+                        class="text-sm font-bold text-white group-hover/ai:text-primary transition-colors text-left">AI
+                        Strategist</span>
+                </div>
+            </button>
+        </div>
+
+        <!-- Main Hub Toggle -->
+        <button id="support-hub-toggle" onclick="toggleSupportHub()"
+            class="w-14 h-14 bg-slate-900 border border-white/10 text-white rounded-2xl flex items-center justify-center shadow-2xl transition-all hover:scale-105 active:scale-95 group">
+            <i class="fas fa-plus text-xl transition-transform duration-300" id="hub-icon"></i>
+            <span
+                class="absolute right-20 bg-slate-900 border border-white/10 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-white whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                Support Hub
+            </span>
+        </button>
+    </div>
 
     {% include 'home/partials/ai_chat_widget.html' %}
 
@@ -276,6 +326,18 @@
             });
         }, 5000);
 
+        // Support Hub Logic
+        function toggleSupportHub() {
+            const menu = document.getElementById('support-menu');
+            const icon = document.getElementById('hub-icon');
+            menu.classList.toggle('hidden');
+            if (!menu.classList.contains('hidden')) {
+                icon.style.transform = 'rotate(45deg)';
+            } else {
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
         // AI Chat Logic
         let chatHistory = [];
 
@@ -284,6 +346,11 @@
             window.classList.toggle('hidden');
             if (!window.classList.contains('hidden')) {
                 document.getElementById('ai-chat-input').focus();
+                // Close support hub if open
+                const menu = document.getElementById('support-menu');
+                if (!menu.classList.contains('hidden')) {
+                    toggleSupportHub();
+                }
             }
         }
 

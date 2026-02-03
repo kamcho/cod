@@ -37,8 +37,7 @@
                     <select name="cohort_id" onchange="this.form.submit()"
                         class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm font-bold appearance-none focus:outline-none focus:border-primary transition-colors cursor-pointer text-white">
                         {% for cohort in all_cohorts %}
-                        <option value="{{ cohort.id }}" {% if selected_cohort.id==cohort.id %}selected{% endif %}>{{
-                            cohort.name }}</option>
+                        <option value="{{ cohort.id }}" {% if selected_cohort.id == cohort.id %}selected{% endif %}>{{ cohort.name }}</option>
                         {% endfor %}
                     </select>
                     <i
@@ -58,29 +57,24 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <div class="glass p-8 rounded-3xl text-center group hover:border-primary/40 transition-all">
             <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Total Participants</div>
-            <div class="text-4xl font-black text-primary group-hover:scale-110 transition-transform">{{
-                stats.total_players }}</div>
+            <div class="text-4xl font-black text-primary group-hover:scale-110 transition-transform">{{ stats.total_players }}</div>
             <div class="text-[10px] font-bold text-slate-600 mt-2 italic shadow-sm">Registered Individuals</div>
         </div>
         <div class="glass p-8 rounded-3xl text-center group hover:border-secondary/40 transition-all">
             <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Active Teams</div>
-            <div class="text-4xl font-black text-secondary group-hover:scale-110 transition-transform">{{
-                stats.total_teams }}</div>
+            <div class="text-4xl font-black text-secondary group-hover:scale-110 transition-transform">{{ stats.total_teams }}</div>
             <div class="text-[10px] font-bold text-slate-600 mt-2 italic">Formed Squads</div>
         </div>
         <div class="glass p-8 rounded-3xl text-center group hover:border-red-500/40 transition-all">
             <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Global Kills</div>
-            <div class="text-4xl font-black text-red-500 group-hover:scale-110 transition-transform">{{
-                stats.total_kills }}</div>
+            <div class="text-4xl font-black text-red-500 group-hover:scale-110 transition-transform">{{ stats.total_kills }}</div>
             <div class="text-[10px] font-bold text-slate-600 mt-2 italic">Combat Eliminations</div>
         </div>
         <div
             class="glass p-8 rounded-3xl text-center group hover:border-amber-400/40 transition-all border-amber-400/10">
             <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">XP Redistributed</div>
-            <div class="text-4xl font-black text-amber-400 group-hover:scale-110 transition-transform">{{ stats.total_xp
-                }}</div>
-            <div class="text-[10px] font-bold text-slate-600 mt-2 italic tracking-tighter shadow-sm">Achievement Points
-            </div>
+            <div class="text-4xl font-black text-amber-400 group-hover:scale-110 transition-transform">{{ stats.total_xp }}</div>
+            <div class="text-[10px] font-bold text-slate-600 mt-2 italic tracking-tighter shadow-sm">Achievement Points</div>
         </div>
     </div>
 
@@ -120,8 +114,7 @@
                             <tr class="hover:bg-white/5 transition-colors group">
                                 <td class="px-6 py-4">
                                     <a href="{% url 'player_analytics' stat.player.gamer_tag %}"
-                                        class="text-sm font-bold text-white hover:text-primary transition-colors">{{
-                                        stat.player.gamer_tag }}</a>
+                                        class="text-sm font-bold text-white hover:text-primary transition-colors">{{ stat.player.gamer_tag }}</a>
                                 </td>
                                 <td class="px-6 py-4">
                                     <span class="text-sm font-black text-primary">#{{ stat.rank }}</span>
@@ -218,13 +211,10 @@
                             <tbody class="divide-y divide-white/5">
                                 {% for fixture in all_solo_fixtures %}
                                 <tr class="hover:bg-white/5 transition-colors group">
-                                    <td class="px-6 py-4 text-xs font-bold text-white">{{ fixture.match_date|date:"M d,
-                                        H:i" }}</td>
+                                    <td class="px-6 py-4 text-xs font-bold text-white">{{ fixture.match_date|date:"M d, H:i" }}</td>
                                     <td class="px-6 py-4 text-xs font-bold text-slate-400">{{ fixture.stage.name }}</td>
                                     <td class="px-6 py-4 text-center">
-                                        <span
-                                            class="text-[10px] font-black text-white px-2 py-1 bg-white/5 rounded-md">{{
-                                            fixture.players.count }} Registered</span>
+                                        <span class="text-[10px] font-black text-white px-2 py-1 bg-white/5 rounded-md">{{ fixture.players.count }} Registered</span>
                                     </td>
                                     <td class="px-6 py-4 text-right">
                                         <div class="flex items-center justify-end gap-3">
@@ -279,26 +269,21 @@
                             <tbody class="divide-y divide-white/5">
                                 {% for fixture in all_team_fixtures %}
                                 <tr class="hover:bg-white/5 transition-colors group">
-                                    <td class="px-6 py-4 text-xs font-bold text-white">{{ fixture.match_date|date:"M d,
-                                        H:i" }}</td>
+                                    <td class="px-6 py-4 text-xs font-bold text-white">{{ fixture.match_date|date:"M d, H:i" }}</td>
                                     <td class="px-6 py-4 text-xs font-bold text-slate-400">{{ fixture.stage.name }}</td>
                                     <td class="px-6 py-4">
                                         <div class="flex flex-wrap gap-2">
                                             {% for team in fixture.teamups.all %}
-                                            <span
-                                                class="text-[9px] font-black text-secondary bg-secondary/10 px-2 py-1 rounded-md border border-secondary/20">{{
-                                                team.name }}</span>
+                                            <span class="text-[9px] font-black text-secondary bg-secondary/10 px-2 py-1 rounded-md border border-secondary/20">{{ team.name }}</span>
                                             {% endfor %}
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 text-right">
                                         <div class="flex items-center justify-end gap-3">
                                             {% if fixture.round_result %}
-                                            <span
-                                                class="text-[9px] font-black text-green-500 uppercase tracking-widest">Completed</span>
+                                            <span class="text-[9px] font-black text-green-500 uppercase tracking-widest">Completed</span>
                                             {% else %}
-                                            <span
-                                                class="text-[9px] font-black text-secondary uppercase tracking-widest">Scheduled</span>
+                                            <span class="text-[9px] font-black text-secondary uppercase tracking-widest">Scheduled</span>
                                             {% endif %}
                                             <a href="{% url 'record_team_stats' fixture.id %}"
                                                 class="px-3 py-1.5 bg-secondary text-slate-950 font-black text-[10px] uppercase tracking-widest rounded-lg hover:bg-secondary-hover transition-colors shadow-lg shadow-secondary/20">Record</a>
