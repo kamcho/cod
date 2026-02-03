@@ -860,7 +860,20 @@ def ai_chat_view(request):
             if not messages:
                 return JsonResponse({'error': 'No messages provided'}, status=400)
             
-            response_text = ai_service.generate_response(messages)
+            # Fetch platform context
+            from .models import GameMode, Cohort
+            
+            modes_info = []
+            for mode in GameMode.objects.all():
+                modes_info.append(f"- {mode.name}: {mode.description} (Fee: KES {mode.amount}, Max Players: {mode.max_players})")
+            
+            cohorts_info = []
+            for cohort in Cohort.objects.filter(status__in=['registration_ongoing', 'running']).order_by('start_date'):
+                cohorts_info.append(f"- {cohort.name}: Status: {cohort.get_status_display()}, Closes: {cohort.closes_at.strftime('%Y-%m-%d')}")
+                
+            platform_context = "AVAILABLE MODES:\n" + "\n".join(modes_info) + "\n\nACTIVE COHORTS:\n" + "\n".join(cohorts_info)
+            
+            response_text = ai_service.generate_response(messages, context=platform_context)
             return JsonResponse({'response': response_text})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
