@@ -1,0 +1,68 @@
+{% extends 'home/base.html' %}
+{% load static %}
+
+{% block title %}Tournament Brackets | Elite Tournaments{% endblock %}
+
+{% block content %}
+<div class="space-y-12">
+    <header class="text-center space-y-4">
+        <div class="text-primary font-black uppercase tracking-widest text-[10px]">Deployment Sequence</div>
+        <h1 class="text-4xl lg:text-5xl font-black italic tracking-tighter">{{ cohort.name }} Tournament Structure</h1>
+    </header>
+
+    <div class="relative">
+        <div class="flex gap-8 lg:gap-16 overflow-x-auto pb-12 snap-x">
+            {% for item in bracket_data %}
+            <div class="flex-1 min-w-[300px] space-y-6 snap-start">
+                <div class="text-center py-4 bg-white/5 border-b-2 border-primary rounded-t-xl">
+                    <h3 class="text-xs font-black uppercase tracking-widest text-white leading-none">{{ item.stage.name
+                        }}</h3>
+                </div>
+
+                <div class="space-y-4">
+                    {% for fixture in item.solo_fixtures %}
+                    <div class="glass p-5 rounded-2xl border-white/5 hover:border-primary/30 transition-all group">
+                        <span class="block text-[8px] font-black uppercase text-slate-500 mb-3 tracking-widest">Fixture
+                            #{{ fixture.id }} • Solo Sortie</span>
+                        <div class="space-y-3">
+                            {% for player in fixture.players.all %}
+                            <div
+                                class="flex justify-between items-center p-2 rounded-lg bg-white/5 border border-white/5 group-hover:bg-white/10 transition-colors">
+                                <span class="text-sm font-bold text-slate-200">{{ player.gamer_tag }}</span>
+                                <i
+                                    class="fas fa-crosshairs text-[10px] text-primary/30 group-hover:text-primary transition-colors"></i>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                    {% for fixture in item.team_fixtures %}
+                    <div class="glass p-5 rounded-2xl border-white/5 hover:border-secondary/30 transition-all group">
+                        <span class="block text-[8px] font-black uppercase text-slate-500 mb-3 tracking-widest">Fixture
+                            #{{ fixture.id }} • Team Operation</span>
+                        <div class="space-y-3">
+                            {% for team in fixture.teamups.all %}
+                            <div
+                                class="flex justify-between items-center p-2 rounded-lg bg-white/5 border border-white/5 group-hover:bg-white/10 transition-colors">
+                                <span class="text-sm font-bold text-slate-200">{{ team.name }}</span>
+                                <i
+                                    class="fas fa-shield text-[10px] text-secondary/30 group-hover:text-secondary transition-colors"></i>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Scroll indicator for mobile -->
+        <div
+            class="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 text-[10px] text-slate-600 font-bold uppercase tracking-widest pointer-events-none md:hidden animate-pulse">
+            <i class="fas fa-arrow-left"></i> Swipe to Navigate <i class="fas fa-arrow-right"></i>
+        </div>
+    </div>
+</div>
+{% endblock %}

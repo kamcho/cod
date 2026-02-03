@@ -1,0 +1,201 @@
+{% extends 'home/base.html' %}
+{% load static %}
+
+{% block title %}Manage Squad | Elite Tournaments{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-12">
+    <header class="space-y-4">
+        <div class="text-secondary font-black uppercase tracking-widest text-[10px] animate-pulse">
+            Squad Management
+        </div>
+        <div class="flex flex-col md:flex-row md:items-end gap-3 md:gap-6">
+            <h1 class="text-4xl font-black italic tracking-tighter uppercase leading-none">{{ team.name }}</h1>
+            <span class="text-slate-500 font-bold uppercase tracking-widest text-sm mb-1">({{ team.game_mode.name
+                }})</span>
+        </div>
+    </header>
+
+    {% if messages %}
+    <div class="space-y-3">
+        {% for message in messages %}
+        <div class="glass px-6 py-4 rounded-2xl border-l-4 border-secondary text-sm font-bold text-white shadow-lg">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+    </div>
+</div>
+
+<!-- Join Requests Section -->
+<div class="glass p-8 md:p-10 rounded-[2.5rem] shadow-2xl relative overflow-hidden border-white/5">
+    <div class="mb-8 flex items-center gap-4">
+        <div class="w-12 h-12 bg-secondary/10 rounded-2xl flex items-center justify-center text-secondary text-xl">
+            <i class="fas fa-file-signature"></i>
+        </div>
+        <div>
+            <h3 class="text-xl font-black uppercase italic tracking-tighter">Join Requests</h3>
+            <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Applications from Recruitment
+                Center</p>
+        </div>
+    </div>
+
+    <div class="space-y-4">
+        {% for req in team.join_requests.all %}
+        {% if req.status == 'PENDING' %}
+        <div class="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="text-[10px] font-black text-white uppercase">{{ req.player.gamer_tag }}</div>
+                    <span class="text-[8px] font-black text-slate-500 uppercase">{{ req.created_at|timesince }}
+                        ago</span>
+                </div>
+                <div class="flex gap-2">
+                    <a href="{% url 'manage_join_request' req.id 'approve' %}"
+                        class="w-8 h-8 rounded-lg bg-green-500/10 text-green-500 flex items-center justify-center hover:bg-green-500 transition-colors hover:text-white">
+                        <i class="fas fa-check text-[10px]"></i>
+                    </a>
+                    <a href="{% url 'manage_join_request' req.id 'reject' %}"
+                        class="w-8 h-8 rounded-lg bg-red-500/10 text-red-500 flex items-center justify-center hover:bg-red-500 transition-colors hover:text-white">
+                        <i class="fas fa-times text-[10px]"></i>
+                    </a>
+                </div>
+            </div>
+            <p
+                class="text-[10px] text-slate-400 font-medium italic bg-slate-900/50 p-3 rounded-lg border border-white/5">
+                "{{ req.message }}"
+            </p>
+            <div class="pt-2">
+                <a href="{% url 'player_analytics' req.player.gamer_tag %}"
+                    class="text-[8px] font-black text-primary uppercase tracking-widest hover:underline">
+                    Review Combat Stats <i class="fas fa-external-link-alt ml-1"></i>
+                </a>
+            </div>
+        </div>
+        {% endif %}
+        {% empty %}
+        <div class="py-12 text-center text-slate-600 italic font-medium">No active applications.</div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Existing Invite Recruits List (Optional: Keep or move) -->
+<div class="glass p-8 md:p-10 rounded-[2.5rem] shadow-2xl border-white/5">
+
+    <div class="glass p-8 md:p-10 rounded-[2.5rem] shadow-2xl border-white/5">
+        <h3 class="text-xl font-black uppercase italic tracking-tighter mb-8 bg-white/5 p-4 rounded-2xl text-center">
+            Pending Recruits</h3>
+        <div class="space-y-4">
+            {% for invite in invites %}
+            <div
+                class="flex items-center gap-4 p-4 bg-white/5 border border-white/10 rounded-2xl group hover:border-amber-400/30 transition-all">
+                <div
+                    class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-600 group-hover:text-amber-400 transition-colors">
+                    <i class="fas fa-user-clock text-xs"></i>
+                </div>
+                <div class="flex-1">
+                    <div class="font-bold text-white text-sm">{{ invite.invitee.gamer_tag }}</div>
+                    <div class="text-[10px] uppercase font-black tracking-widest text-slate-500">Sent {{
+                        invite.created_at|timesince }} ago</div>
+                </div>
+                <div
+                    class="px-3 py-1 bg-amber-400/10 text-amber-400 rounded-lg text-[8px] font-black uppercase tracking-widest border border-amber-400/20">
+                    PENDING
+                </div>
+            </div>
+            {% empty %}
+            <div class="py-12 text-center text-slate-600 italic font-medium">No pending recruits.</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Roster Column -->
+<div class="glass p-8 md:p-10 rounded-[2.5rem] shadow-2xl border-white/5">
+    <div class="mb-8 flex items-center gap-4">
+        <div class="w-12 h-12 bg-secondary/10 rounded-2xl flex items-center justify-center text-secondary text-xl">
+            <i class="fas fa-user-shield"></i>
+        </div>
+        <h3 class="text-xl font-black uppercase italic tracking-tighter">Active Roster</h3>
+    </div>
+
+    <div class="space-y-4">
+        {% for member in team.players.all %}
+        <div
+            class="flex items-center gap-4 p-5 bg-white/5 border border-white/10 rounded-3xl group hover:border-secondary transition-all">
+            <div
+                class="w-12 h-12 rounded-2xl overflow-hidden bg-slate-800 border-2 border-white/5 group-hover:border-secondary transition-all flex-shrink-0">
+                {% if member.profile.avatar %}
+                <img src="{{ member.profile.avatar.url }}" class="w-full h-full object-cover">
+                {% else %}
+                <div class="w-full h-full flex items-center justify-center text-slate-600">
+                    <i class="fas fa-user-ninja"></i>
+                </div>
+                {% endif %}
+            </div>
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h4 class="text-sm font-black text-white uppercase tracking-tight truncate">{{
+                            member.gamer_tag }}</h4>
+                        <div class="text-[9px] font-black text-slate-500 uppercase tracking-widest mt-0.5">
+                            {% if member == team.captain %}Squad Captain{% else %}Field Operative{% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Payment Status Badges -->
+                    <div class="flex gap-2">
+                        {% for item in member_statuses %}
+                        {% for status in item.statuses %}
+                        {% if status.player.id == member.id %}
+                        <div class="group relative">
+                            <div class="w-6 h-6 rounded-full flex items-center justify-center text-[10px] border 
+                                                    {% if status.paid %}bg-green-500/10 border-green-500/50 text-green-500{% else %}bg-slate-800 border-white/5 text-slate-600{% endif %} 
+                                                    transition-all hover:scale-110">
+                                <i class="fas {% if status.paid %}fa-check{% else %}fa-wallet{% endif %}"></i>
+                            </div>
+                            <!-- Tooltip -->
+                            <div class="absolute bottom-full right-0 mb-2 hidden group-hover:block z-50">
+                                <div
+                                    class="glass px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest whitespace-nowrap border border-white/10 shadow-xl">
+                                    {{ item.cohort.name }}: {% if status.paid %}PAID{% else %}NOT PAID{% endif
+                                    %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="{% url 'player_analytics' member.gamer_tag %}"
+                    class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-primary border border-white/10 hover:bg-primary hover:text-slate-950 transition-all shadow-lg"
+                    title="View Analytics">
+                    <i class="fas fa-chart-line text-xs"></i>
+                </a>
+                {% if user == team.captain and member != team.captain %}
+                <button
+                    class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-red-500 border border-white/10 hover:bg-red-500 hover:text-white transition-all shadow-lg"
+                    title="Eject Operative">
+                    <i class="fas fa-user-minus text-xs"></i>
+                </button>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="mt-12 pt-8 border-t border-white/5">
+        <div class="text-[10px] font-black text-slate-600 uppercase tracking-widest text-center">
+            Squad Member Limit: {{ team.players.count }} / {{ team.game_mode.max_players }}
+        </div>
+    </div>
+</div>
+</div>
+</div>
+{% endblock %}

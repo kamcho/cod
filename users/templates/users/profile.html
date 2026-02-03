@@ -1,0 +1,120 @@
+{% extends 'home/base.html' %}
+{% load static %}
+
+{% block title %}{{ user.gamer_tag }} Profile | Elite Tournaments{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto space-y-12">
+    <!-- Quick Stats Matrix -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div class="glass p-6 rounded-3xl text-center group hover:border-primary/40 transition-all">
+            <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Total Wins</div>
+            <div class="text-3xl font-black text-white group-hover:scale-110 transition-transform">0</div>
+        </div>
+        <div class="glass p-6 rounded-3xl text-center group hover:border-secondary/40 transition-all">
+            <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Deployments</div>
+            <div class="text-3xl font-black text-white group-hover:scale-110 transition-transform">0</div>
+        </div>
+        <div class="glass p-6 rounded-3xl text-center group hover:border-primary/40 transition-all border-primary/20">
+            <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Global Rank</div>
+            <div class="text-3xl font-black text-primary group-hover:scale-110 transition-transform">#--</div>
+        </div>
+        <div class="glass p-6 rounded-3xl text-center group hover:border-green-500/40 transition-all">
+            <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Combat Pay</div>
+            <div class="text-3xl font-black text-white group-hover:scale-110 transition-transform"><span
+                    class="text-xs text-slate-500 font-bold mr-1">KSh</span>0</div>
+        </div>
+    </div>
+
+    <!-- Profile Dossier -->
+    <div class="glass rounded-[3rem] overflow-hidden shadow-2xl border-white/5">
+        <div class="bg-gradient-to-br from-slate-900/50 to-transparent p-8 md:p-12">
+            <div class="flex flex-col md:flex-row items-center gap-8 mb-12">
+                <div class="relative group">
+                    <div
+                        class="w-32 h-32 rounded-[2rem] bg-gradient-to-br from-primary to-secondary p-1 rotate-3 group-hover:rotate-0 transition-transform duration-500">
+                        <div
+                            class="w-full h-full rounded-[1.8rem] bg-slate-900 flex items-center justify-center text-4xl font-black text-white overflow-hidden shadow-inner uppercase">
+                            {{ user.gamer_tag|first }}
+                        </div>
+                    </div>
+                    <div
+                        class="absolute -bottom-2 -right-2 w-10 h-10 bg-slate-900 border-4 border-slate-950 rounded-full flex items-center justify-center text-primary text-sm shadow-xl">
+                        <i class="fas fa-shield-check"></i>
+                    </div>
+                </div>
+
+                <div class="text-center md:text-left space-y-2">
+                    <h1 class="text-4xl font-black italic tracking-tighter uppercase leading-none">{{ user.gamer_tag }}
+                    </h1>
+                    <p class="text-slate-400 font-medium tracking-wide">{{ user.full_name|default:"Elite Competitor" }}
+                    </p>
+                    <div class="flex flex-wrap justify-center md:justify-start gap-2 pt-2">
+                        <span
+                            class="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-500">Tier
+                            1 Operative</span>
+                        <span
+                            class="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-500">M-Pesa
+                            Verified</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 pt-8 border-t border-white/5">
+                <div class="space-y-4">
+                    <div class="group">
+                        <label
+                            class="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1 ml-1 group-hover:text-primary transition-colors">Digital
+                            Identity (Email)</label>
+                        <div
+                            class="px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-sm font-bold text-slate-200">
+                            {{ user.email }}
+                        </div>
+                    </div>
+                    <div class="group">
+                        <label
+                            class="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1 ml-1 group-hover:text-primary transition-colors">Tactical
+                            Comms (Phone)</label>
+                        <div
+                            class="px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-sm font-bold text-slate-200">
+                            {{ user.phone_number }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="group">
+                        <label
+                            class="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1 ml-1 group-hover:text-primary transition-colors">Operation
+                            Sector (County)</label>
+                        <div
+                            class="px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-sm font-bold text-slate-200 italic">
+                            {{ user.county|default:"Not assigned" }}
+                        </div>
+                    </div>
+                    <div class="group">
+                        <label
+                            class="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1 ml-1 group-hover:text-primary transition-colors">Enlisted
+                            Since</label>
+                        <div
+                            class="px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-sm font-bold text-slate-200">
+                            {{ user.date_joined|date:"d M Y" }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-12 flex flex-col sm:flex-row gap-4">
+                <button
+                    class="flex-1 py-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-black text-xs uppercase tracking-widest rounded-2xl transition-all">
+                    Edit Personnel File
+                </button>
+                <a href="{% url 'logout' %}"
+                    class="flex-1 py-4 border border-red-500/30 text-red-500 hover:bg-red-500/10 font-black text-xs uppercase tracking-widest rounded-2xl transition-all text-center">
+                    Terminate Session (Logout)
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

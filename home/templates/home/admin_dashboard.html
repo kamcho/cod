@@ -1,0 +1,405 @@
+{% extends 'home/base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard | Elite Tournaments{% endblock %}
+
+{% block content %}
+<div class="space-y-12 max-w-[1600px] mx-auto">
+    <header class="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-8 border-b border-white/5">
+        <div>
+            <h1 class="text-4xl font-black italic tracking-tighter mb-2 uppercase">Administration Overview</h1>
+            <p class="text-slate-400 font-medium">Real-time metrics and participation tracking across all active
+                cohorts.</p>
+        </div>
+        <div class="flex items-center gap-3 bg-white/5 p-2 pr-6 rounded-2xl border border-white/10">
+            <div class="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center text-primary">
+                <i class="fas fa-lock"></i>
+            </div>
+            <div>
+                <span class="block text-[8px] font-black text-slate-500 uppercase tracking-widest leading-tight">Access
+                    Level</span>
+                <span class="text-xs font-black text-primary uppercase">Full Analytics</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Filter & Context Switcher -->
+    <form method="GET" class="glass p-6 rounded-3xl flex flex-col md:flex-row items-center gap-6 shadow-2xl">
+        <div class="flex items-center gap-4 flex-1">
+            <div
+                class="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-primary border border-white/10">
+                <i class="fas fa-filter"></i>
+            </div>
+            <div class="flex-1 space-y-1">
+                <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest">Select Operation
+                    Context</label>
+                <div class="relative">
+                    <select name="cohort_id" onchange="this.form.submit()"
+                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm font-bold appearance-none focus:outline-none focus:border-primary transition-colors cursor-pointer text-white">
+                        {% for cohort in all_cohorts %}
+                        <option value="{{ cohort.id }}" {% if selected_cohort.id==cohort.id %}selected{% endif %}>{{
+                            cohort.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <i
+                        class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none text-xs"></i>
+                </div>
+            </div>
+        </div>
+        <div class="hidden md:block w-px h-12 bg-white/10"></div>
+        <div class="text-right hidden md:block">
+            <span class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Active
+                Context</span>
+            <strong class="text-primary text-sm font-black">{{ selected_cohort.name }}</strong>
+        </div>
+    </form>
+
+    <!-- Stats Matrix -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="glass p-8 rounded-3xl text-center group hover:border-primary/40 transition-all">
+            <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Total Participants</div>
+            <div class="text-4xl font-black text-primary group-hover:scale-110 transition-transform">{{
+                stats.total_players }}</div>
+            <div class="text-[10px] font-bold text-slate-600 mt-2 italic shadow-sm">Registered Individuals</div>
+        </div>
+        <div class="glass p-8 rounded-3xl text-center group hover:border-secondary/40 transition-all">
+            <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Active Teams</div>
+            <div class="text-4xl font-black text-secondary group-hover:scale-110 transition-transform">{{
+                stats.total_teams }}</div>
+            <div class="text-[10px] font-bold text-slate-600 mt-2 italic">Formed Squads</div>
+        </div>
+        <div class="glass p-8 rounded-3xl text-center group hover:border-red-500/40 transition-all">
+            <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Global Kills</div>
+            <div class="text-4xl font-black text-red-500 group-hover:scale-110 transition-transform">{{
+                stats.total_kills }}</div>
+            <div class="text-[10px] font-bold text-slate-600 mt-2 italic">Combat Eliminations</div>
+        </div>
+        <div
+            class="glass p-8 rounded-3xl text-center group hover:border-amber-400/40 transition-all border-amber-400/10">
+            <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">XP Redistributed</div>
+            <div class="text-4xl font-black text-amber-400 group-hover:scale-110 transition-transform">{{ stats.total_xp
+                }}</div>
+            <div class="text-[10px] font-bold text-slate-600 mt-2 italic tracking-tighter shadow-sm">Achievement Points
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Data Grid -->
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-12">
+        <!-- Results Column -->
+        <div class="space-y-12">
+            <header>
+                <h2 class="text-2xl font-black flex items-center gap-3 mb-2 uppercase italic tracking-tight">
+                    <i class="fas fa-history text-primary"></i> Recent Intel
+                </h2>
+                <p class="text-slate-400 text-sm">The latest tracked performance across this cohort.</p>
+            </header>
+
+            <div class="space-y-6">
+                <!-- Solo Results -->
+                <div class="glass rounded-3xl overflow-hidden shadow-xl border-white/5">
+                    <div class="p-6 border-b border-white/5 flex justify-between items-center">
+                        <h3 class="text-xs font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-primary rounded-full"></span> Solo Combat
+                        </h3>
+                    </div>
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="bg-white/5 border-b border-white/5">
+                                <th class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                                    Player</th>
+                                <th class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                                    Rank</th>
+                                <th
+                                    class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-right">
+                                    Kills</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5">
+                            {% for stat in recent_solo_results %}
+                            <tr class="hover:bg-white/5 transition-colors group">
+                                <td class="px-6 py-4">
+                                    <a href="{% url 'player_analytics' stat.player.gamer_tag %}"
+                                        class="text-sm font-bold text-white hover:text-primary transition-colors">{{
+                                        stat.player.gamer_tag }}</a>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="text-sm font-black text-primary">#{{ stat.rank }}</span>
+                                </td>
+                                <td class="px-6 py-4 text-right font-black text-slate-400">{{ stat.kills }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="p-10 text-center text-xs text-slate-600 italic">No solo intel
+                                    recorded.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Team Results -->
+                <div class="glass rounded-3xl overflow-hidden shadow-xl border-white/5">
+                    <div class="p-6 border-b border-white/5 flex justify-between items-center">
+                        <h3 class="text-xs font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-secondary rounded-full"></span> Team Operations
+                        </h3>
+                    </div>
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="bg-white/5 border-b border-white/5">
+                                <th class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                                    Squad</th>
+                                <th class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                                    Rank</th>
+                                <th
+                                    class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-right">
+                                    Kills</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5">
+                            {% for stat in recent_team_results %}
+                            <tr class="hover:bg-white/5 transition-colors group">
+                                <td class="px-6 py-4">
+                                    <span class="text-sm font-bold text-white">{{ stat.team.name }}</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="text-sm font-black text-secondary">#{{ stat.rank }}</span>
+                                </td>
+                                <td class="px-6 py-4 text-right font-black text-slate-400">{{ stat.kills }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="p-10 text-center text-xs text-slate-600 italic">No squad intel
+                                    recorded.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Schedule Column -->
+        <div class="space-y-12">
+            <header>
+                <h2 class="text-2xl font-black flex items-center gap-3 mb-2 uppercase italic tracking-tight">
+                    <i class="fas fa-calendar-alt text-secondary"></i> Fixtures Management
+                </h2>
+                <p class="text-slate-400 text-sm">Global schedule for matches within the selected cohort.</p>
+            </header>
+
+            <div class="space-y-6">
+                <!-- Solo Fixtures -->
+                <div class="glass rounded-3xl overflow-hidden shadow-xl border-white/5">
+                    <div class="p-6 border-b border-white/5 border-l-4 border-l-primary flex items-center gap-3">
+                        <i class="fas fa-user-circle text-primary"></i>
+                        <h3 class="text-xs font-black uppercase tracking-widest text-white leading-none">Solo
+                            Deployments</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left min-w-[500px]">
+                            <thead>
+                                <tr class="bg-white/5 border-b border-white/5">
+                                    <th
+                                        class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                                        Launch Time</th>
+                                    <th
+                                        class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                                        Stage</th>
+                                    <th
+                                        class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-center">
+                                        Roster</th>
+                                    <th
+                                        class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-right">
+                                        Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-white/5">
+                                {% for fixture in all_solo_fixtures %}
+                                <tr class="hover:bg-white/5 transition-colors group">
+                                    <td class="px-6 py-4 text-xs font-bold text-white">{{ fixture.match_date|date:"M d,
+                                        H:i" }}</td>
+                                    <td class="px-6 py-4 text-xs font-bold text-slate-400">{{ fixture.stage.name }}</td>
+                                    <td class="px-6 py-4 text-center">
+                                        <span
+                                            class="text-[10px] font-black text-white px-2 py-1 bg-white/5 rounded-md">{{
+                                            fixture.players.count }} Registered</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <div class="flex items-center justify-end gap-3">
+                                            {% if fixture.round_result %}
+                                            <span
+                                                class="text-[9px] font-black text-green-500 uppercase tracking-widest">Completed</span>
+                                            {% else %}
+                                            <span
+                                                class="text-[9px] font-black text-primary uppercase tracking-widest">Scheduled</span>
+                                            {% endif %}
+                                            <a href="{% url 'record_solo_stats' fixture.id %}"
+                                                class="px-3 py-1.5 bg-primary text-slate-950 font-black text-[10px] uppercase tracking-widest rounded-lg hover:bg-primary-hover transition-colors">Record</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="p-10 text-center text-xs text-slate-600 italic">No solo
+                                        fixtures scheduled.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Team Fixtures -->
+                <div class="glass rounded-3xl overflow-hidden shadow-xl border-white/5">
+                    <div class="p-6 border-b border-white/5 border-l-4 border-l-secondary flex items-center gap-3">
+                        <i class="fas fa-users text-secondary"></i>
+                        <h3 class="text-xs font-black uppercase tracking-widest text-white leading-none">Team Battles
+                        </h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left min-w-[500px]">
+                            <thead>
+                                <tr class="bg-white/5 border-b border-white/5">
+                                    <th
+                                        class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                                        Launch Time</th>
+                                    <th
+                                        class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                                        Stage</th>
+                                    <th
+                                        class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                                        Matchup</th>
+                                    <th
+                                        class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-right">
+                                        Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-white/5">
+                                {% for fixture in all_team_fixtures %}
+                                <tr class="hover:bg-white/5 transition-colors group">
+                                    <td class="px-6 py-4 text-xs font-bold text-white">{{ fixture.match_date|date:"M d,
+                                        H:i" }}</td>
+                                    <td class="px-6 py-4 text-xs font-bold text-slate-400">{{ fixture.stage.name }}</td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex flex-wrap gap-2">
+                                            {% for team in fixture.teamups.all %}
+                                            <span
+                                                class="text-[9px] font-black text-secondary bg-secondary/10 px-2 py-1 rounded-md border border-secondary/20">{{
+                                                team.name }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <div class="flex items-center justify-end gap-3">
+                                            {% if fixture.round_result %}
+                                            <span
+                                                class="text-[9px] font-black text-green-500 uppercase tracking-widest">Completed</span>
+                                            {% else %}
+                                            <span
+                                                class="text-[9px] font-black text-secondary uppercase tracking-widest">Scheduled</span>
+                                            {% endif %}
+                                            <a href="{% url 'record_team_stats' fixture.id %}"
+                                                class="px-3 py-1.5 bg-secondary text-slate-950 font-black text-[10px] uppercase tracking-widest rounded-lg hover:bg-secondary-hover transition-colors shadow-lg shadow-secondary/20">Record</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="p-10 text-center text-xs text-slate-600 italic">No squad
+                                        fixtures scheduled.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Participants Management -->
+    <section class="space-y-8 pt-12">
+        <header>
+            <h2 class="text-2xl font-black flex items-center gap-3 mb-2 uppercase italic tracking-tight">
+                <i class="fas fa-users text-primary"></i> Roster Protocol
+            </h2>
+            <p class="text-slate-400 text-sm">Full roster of players enrolled in this cohort and their seasonal
+                performance.</p>
+        </header>
+
+        <div class="glass rounded-3xl overflow-hidden shadow-2xl border-white/5">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left min-w-[800px]">
+                    <thead>
+                        <tr class="bg-white/5 border-b border-white/5">
+                            <th class="px-8 py-5 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                                Operator / ID</th>
+                            <th class="px-8 py-5 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                                Communication (Email)</th>
+                            <th class="px-8 py-5 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                                Seasonal Kills</th>
+                            <th class="px-8 py-5 text-[10px] font-black text-slate-500 uppercase tracking-widest">Points
+                                (XP)</th>
+                            <th
+                                class="px-8 py-5 text-[10px] font-black text-slate-500 uppercase tracking-widest text-right">
+                                Protocol</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5">
+                        {% for player in participants %}
+                        <tr class="hover:bg-white/5 transition-colors group">
+                            <td class="px-8 py-6">
+                                <div class="flex items-center gap-4">
+                                    <div
+                                        class="w-12 h-12 rounded-xl bg-slate-800 border-2 border-white/5 flex-shrink-0 flex items-center justify-center overflow-hidden group-hover:border-primary transition-colors">
+                                        {% if player.profile.avatar %}
+                                        <img src="{{ player.profile.avatar.url }}" class="w-full h-full object-cover">
+                                        {% else %}
+                                        <i class="fas fa-user-ninja text-slate-600"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <div class="font-black text-white">{{ player.gamer_tag }}</div>
+                                        <div
+                                            class="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-0.5">
+                                            ID: #{{ player.id }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-8 py-6 text-sm text-slate-400 font-medium">{{ player.email }}</td>
+                            <td class="px-8 py-6">
+                                <div
+                                    class="inline-flex items-center gap-2 px-3 py-1 bg-red-500/10 text-red-500 text-xs font-black rounded-lg border border-red-500/10 italic tracking-tighter shadow-sm">
+                                    {{ player.cohort_kills|default:0 }} Eliminations</div>
+                            </td>
+                            <td class="px-8 py-6">
+                                <div
+                                    class="inline-flex items-center gap-2 px-3 py-1 bg-amber-400/10 text-amber-400 text-xs font-black rounded-lg border border-amber-400/10 italic tracking-tighter">
+                                    {{ player.cohort_xp|default:0 }} XP</div>
+                            </td>
+                            <td class="px-8 py-6 text-right">
+                                <a href="{% url 'player_analytics' player.gamer_tag %}"
+                                    class="px-4 py-2 border border-primary text-primary hover:bg-primary hover:text-slate-950 font-black text-[10px] uppercase tracking-widest rounded-xl transition-all">View
+                                    Dossier</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="p-32 text-center">
+                                <div class="flex flex-col items-center gap-6 opacity-30">
+                                    <i class="fas fa-user-slash text-6xl"></i>
+                                    <p class="text-xl font-black uppercase tracking-widest italic tracking-tighter">No
+                                        participants detected in this sector.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

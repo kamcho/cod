@@ -1,0 +1,200 @@
+{% extends 'home/base.html' %}
+{% load static %}
+
+{% block title %}{{ mode.name }} Detail | Elite Tournaments{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-12">
+    <!-- Hero Section -->
+    <header class="text-center space-y-6 relative py-12">
+        <div class="absolute inset-0 opacity-10 pointer-events-none">
+            <i class="fas {{ mode.icon|default:'fa-gamepad' }} text-[200px]"></i>
+        </div>
+
+        <div
+            class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-[0.2em] animate-pulse">
+            <i class="fas fa-crosshairs"></i> Operational Format
+        </div>
+
+        <h1
+            class="text-6xl lg:text-8xl font-black tracking-tighter italic uppercase leading-tight bg-gradient-to-b from-white to-white/40 bg-clip-text text-transparent">
+            {{ mode.name }}
+        </h1>
+
+        <p class="text-slate-400 font-medium italic text-lg max-w-2xl mx-auto">{{ mode.description|default:"Master the
+            unique challenges of this tactical format and dominate the global rankings." }}</p>
+
+        <div class="flex items-center justify-center gap-8 mt-8">
+            <div class="glass px-6 py-3 rounded-2xl flex items-center gap-3">
+                <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none">Entry
+                    Fee</span>
+                <span class="text-2xl font-black text-primary italic">KSh {{ mode.amount }}</span>
+            </div>
+            <div class="glass px-6 py-3 rounded-2xl flex items-center gap-3">
+                <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none">Max
+                    Capacity</span>
+                <span class="text-2xl font-black text-secondary italic">{{ mode.max_players }} <span
+                        class="text-xs">OPs</span></span>
+            </div>
+        </div>
+    </header>
+
+    {% if messages %}
+    <div class="space-y-3">
+        {% for message in messages %}
+        <div
+            class="glass px-6 py-4 rounded-2xl border-l-4 {% if message.tags == 'success' %}border-green-500 text-green-400{% else %}border-red-500 text-red-400{% endif %} text-sm font-bold shadow-lg">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Participation Form -->
+    <div class="glass p-10 rounded-[3rem] shadow-2xl relative overflow-hidden border-white/10">
+        <div class="relative z-10 space-y-10">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center text-primary text-2xl">
+                    <i class="fas fa-shield-halved"></i>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-black uppercase italic tracking-tighter text-white">Enlist for Active
+                        Season</h3>
+                    <p class="text-slate-500 text-sm">Select your objective and secure your deployment via M-Pesa.</p>
+                </div>
+            </div>
+
+            <form id="paymentForm" method="POST" action="" class="space-y-8">
+                {% csrf_token %}
+
+                <!-- Cohort Selection -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {% for cohort in active_cohorts %}
+                    <label class="relative group cursor-pointer">
+                        <input type="radio" name="cohort_id" value="{{ cohort.id }}" class="peer hidden" required {% if forloop.first %}checked{% endif %}
+                            data-url="{% url 'initiate_payment' mode.id cohort.id %}">
+                        <div
+                            class="glass p-6 rounded-2xl border-2 border-white/5 peer-checked:border-primary peer-checked:bg-primary/5 transition-all group-hover:bg-white/5">
+                            <div class="flex justify-between items-center mb-2">
+                                <span
+                                    class="text-[10px] font-black uppercase text-slate-500 group-hover:text-primary transition-colors">{{
+                                    cohort.status|upper }}</span>
+                                <i
+                                    class="fas fa-check-circle text-primary opacity-0 peer-checked:opacity-100 transition-opacity"></i>
+                            </div>
+                            <div
+                                class="text-lg font-black text-white group-hover:text-primary transition-colors leading-none uppercase tracking-tight">
+                                {{ cohort.name }}</div>
+                            <div class="mt-4 flex items-center justify-between text-[10px] font-bold text-slate-500">
+                                <span>START: {{ cohort.start_date|date:"M d" }}</span>
+                                <span>ENDS: {{ cohort.end_date|date:"M d" }}</span>
+                            </div>
+                        </div>
+                    </label>
+                    {% empty %}
+                    <div class="col-span-full py-12 text-center text-slate-600 italic font-medium glass rounded-2xl">
+                        No active seasons available for participation at this time.
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Squad Selection (For Team Modes) -->
+                {% if user_squads %}
+                <div class="space-y-4 pt-6 border-t border-white/5">
+                    <div class="space-y-2">
+                        <label class="block text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Select
+                            Your Squad</label>
+                        <div class="relative group">
+                            <div
+                                class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-slate-600 group-focus-within:text-primary transition-colors text-lg">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <select name="team_id" required
+                                class="w-full bg-slate-900/50 border border-white/10 rounded-2xl pl-14 pr-4 py-5 font-black text-xl text-white focus:outline-none focus:border-primary focus:bg-slate-900/80 transition-all appearance-none cursor-pointer">
+                                <option value="" disabled selected>Select a Squad</option>
+                                {% for squad in user_squads %}
+                                <option value="{{ squad.id }}">{{ squad.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <div
+                                class="absolute inset-y-0 right-0 pr-5 flex items-center pointer-events-none text-slate-600">
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                        </div>
+                        <p class="text-[9px] text-slate-600 italic ml-1">You must be a member of a squad to enlist in
+                            this format.</p>
+                    </div>
+                </div>
+                {% elif mode.name != 'Solo' %}
+                <div class="space-y-4 pt-6 border-t border-white/5">
+                    <div
+                        class="glass p-6 rounded-2xl border border-amber-500/20 bg-amber-500/5 text-amber-500 text-sm font-bold flex items-center gap-4">
+                        <i class="fas fa-triangle-exclamation text-xl"></i>
+                        <div>
+                            <div class="uppercase tracking-widest text-[10px] mb-1">Squad Required</div>
+                            You haven't joined or created a squad for this format. <a href="{% url 'create_squad' %}"
+                                class="underline hover:text-amber-400">Create one now</a> to participate.
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if active_cohorts %}
+                <!-- M-Pesa Phone Input -->
+                <div class="space-y-4 pt-6 border-t border-white/5">
+                    <div class="space-y-2">
+                        <label class="block text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">M-Pesa
+                            Phone Number</label>
+                        <div class="relative group">
+                            <div
+                                class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-slate-600 group-focus-within:text-primary transition-colors text-lg">
+                                <i class="fas fa-mobile-screen-button"></i>
+                            </div>
+                            <input type="text" name="phone_number"
+                                class="w-full bg-slate-900/50 border border-white/10 rounded-2xl pl-14 pr-4 py-5 font-black text-xl text-white focus:outline-none focus:border-primary focus:bg-slate-900/80 transition-all placeholder:text-slate-800 tracking-widest"
+                                placeholder="2547XXXXXXXX" value="{{ user.phone_number }}" required>
+                        </div>
+                        <p class="text-[9px] text-slate-600 italic ml-1">Format: 254712345678 (Do not include +)</p>
+                    </div>
+
+                    <button type="submit"
+                        class="w-full py-6 bg-[#25D366] hover:bg-[#128C7E] text-slate-950 font-black text-sm uppercase tracking-[0.2em] rounded-2xl transition-all shadow-xl shadow-green-500/10 active:scale-95 flex items-center justify-center gap-3">
+                        <i class="fas fa-paper-plane text-lg"></i>
+                        Initiate M-Pesa STK Push
+                    </button>
+
+                    <div class="text-center">
+                        <p class="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Secure transaction
+                            powered by Safaricom Daraja</p>
+                    </div>
+                </div>
+                {% endif %}
+            </form>
+        </div>
+
+        <!-- Decoration -->
+        <div class="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-[120px] -mr-32 -mt-32"></div>
+        <div class="absolute bottom-0 left-0 w-64 h-64 bg-secondary/10 rounded-full blur-[120px] -ml-32 -mb-32"></div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('paymentForm');
+        const radios = document.querySelectorAll('input[name="cohort_id"]');
+
+        function updateAction() {
+            const selected = document.querySelector('input[name="cohort_id"]:checked');
+            if (selected) {
+                form.action = selected.dataset.url;
+            }
+        }
+
+        radios.forEach(radio => {
+            radio.addEventListener('change', updateAction);
+        });
+
+        updateAction(); // Initial call
+    });
+</script>
+{% endblock %}

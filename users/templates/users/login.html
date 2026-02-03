@@ -1,0 +1,79 @@
+{% extends 'home/base.html' %}
+{% load static %}
+
+{% block title %}Login | Elite Tournaments{% endblock %}
+
+{% block navbar %}
+<!-- Keep navbar but maybe simplified? Actually, the standard base navbar is fine -->
+{{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="min-h-[70vh] flex flex-col items-center justify-center p-4">
+    <div
+        class="glass max-w-md w-full p-8 md:p-12 rounded-[2.5rem] shadow-2xl space-y-8 relative overflow-hidden border-white/5">
+        <!-- Decorative icon in background -->
+        <i class="fas fa-key absolute -top-4 -right-4 text-8xl text-white/5 -rotate-12"></i>
+
+        <div class="text-center relative z-10">
+            <h2 class="text-3xl font-black italic tracking-tighter uppercase mb-2">Welcome Back</h2>
+            <p class="text-slate-500 font-medium text-sm">Resume your tactical mission.</p>
+        </div>
+
+        {% if messages %}
+        <div class="space-y-2">
+            {% for message in messages %}
+            <div
+                class="px-4 py-3 rounded-xl text-xs font-bold {% if message.tags == 'error' %}bg-red-500/10 text-red-400 border border-red-500/20{% else %}bg-primary/10 text-primary border border-primary/20{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="post" class="space-y-6 relative z-10">
+            {% csrf_token %}
+
+            {% for field in form %}
+            <div class="space-y-2">
+                <label for="{{ field.id_for_label }}"
+                    class="block text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">
+                    {{ field.label }}
+                </label>
+                <div class="relative group">
+                    <div
+                        class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-600 group-focus-within:text-primary transition-colors">
+                        {% if 'user' in field.name.lower or 'email' in field.name.lower %}
+                        <i class="fas fa-at"></i>
+                        {% elif 'password' in field.name.lower %}
+                        <i class="fas fa-lock"></i>
+                        {% else %}
+                        <i class="fas fa-keyboard"></i>
+                        {% endif %}
+                    </div>
+                    <input type="{{ field.field.widget.input_type|default:'text' }}" name="{{ field.name }}"
+                        id="{{ field.id_for_label }}" value="{{ field.value|default:'' }}"
+                        class="w-full bg-slate-900/50 border border-white/10 rounded-xl pl-12 pr-4 py-3.5 text-sm font-bold text-white focus:outline-none focus:border-primary focus:bg-slate-900/80 transition-all placeholder:text-slate-700"
+                        {% if field.field.required %}required{% endif %}>
+                </div>
+                {% if field.errors %}
+                <p class="text-[10px] font-bold text-red-500 mt-1 italic">{{ field.errors.0 }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <button type="submit"
+                class="w-full py-4 bg-primary hover:bg-primary-hover text-slate-950 font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-xl shadow-primary/20 active:scale-95">
+                Authorize Access
+            </button>
+        </form>
+
+        <div class="text-center text-xs font-medium relative z-10">
+            <span class="text-slate-500">Don't have an account?</span>
+            <a href="{% url 'register' %}"
+                class="text-primary hover:text-white font-black uppercase tracking-wide ml-1 transition-colors">Enlist
+                Here</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

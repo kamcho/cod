@@ -1,0 +1,346 @@
+{% extends 'home/base.html' %}
+{% load static %}
+
+{% block title %}Player Dashboard | Elite Tournaments{% endblock %}
+
+{% block extra_css %}
+/* Specific animations that aren't easily done in tailwind config yet */
+.hover-lift {
+transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.hover-lift:hover {
+transform: translateY(-5px);
+}
+{% endblock %}
+
+{% block content %}
+<div class="space-y-12">
+    <!-- Hero Header -->
+    <header class="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-8 border-b border-white/5">
+        <div>
+            <h1 class="text-4xl font-black mb-2">
+                Welcome back,
+                <a href="{% url 'player_analytics' user.gamer_tag %}"
+                    class="text-primary hover:text-white transition-colors">{{ user.gamer_tag }}</a>
+            </h1>
+            <p class="text-slate-400 font-medium">
+                Current Rank: <span class="text-primary">#{{ profile.rank|default:"--" }}</span>
+                <span class="mx-3 text-white/10">|</span>
+                Kills: <span class="text-primary">{{ profile.total_kills }}</span>
+            </p>
+        </div>
+        <div class="flex gap-4">
+            <a href="{% url 'recruitment_center' %}"
+                class="inline-flex items-center gap-2 bg-secondary hover:bg-secondary-hover text-slate-900 font-bold px-6 py-3 rounded-xl transition-all shadow-lg shadow-secondary/20">
+                <i class="fas fa-users-rays"></i> Recruitment Center
+            </a>
+            <a href="{% url 'create_squad' %}"
+                class="inline-flex items-center gap-2 bg-primary hover:bg-primary-hover text-slate-900 font-bold px-6 py-3 rounded-xl transition-all shadow-lg shadow-primary/20">
+                <i class="fas fa-plus"></i> Form Squad
+            </a>
+        </div>
+    </header>
+
+    {% if pending_invites %}
+    <section class="animate-in fade-in slide-in-from-top-4 duration-500">
+        <div class="glass p-6 rounded-2xl border-l-4 border-l-secondary relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-8 opacity-5">
+                <i class="fas fa-envelope-open-text text-6xl"></i>
+            </div>
+            <h3 class="text-secondary font-black text-lg mb-4 flex items-center gap-2">
+                <i class="fas fa-envelope-open-text"></i> Tactical Invites Pending
+            </h3>
+            <div class="flex flex-wrap gap-4 relative z-10">
+                {% for invite in pending_invites %}
+                <div class="bg-white/5 backdrop-blur-md p-4 rounded-xl border border-white/10 flex items-center gap-6">
+                    <div>
+                        <div class="font-black text-white">{{ invite.team.name }}</div>
+                        <div class="text-xs text-slate-400">From: {{ invite.inviter.gamer_tag }}</div>
+                    </div>
+                    <form method="POST" action="{% url 'respond_invite' invite.id %}" class="flex gap-2">
+                        {% csrf_token %}
+                        <button type="submit" name="action" value="accept"
+                            class="px-4 py-1.5 bg-primary text-slate-900 font-bold text-xs rounded-lg hover:bg-primary-hover transition-colors">Accept</button>
+                        <button type="submit" name="action" value="decline"
+                            class="px-4 py-1.5 border border-red-500/50 text-red-400 font-bold text-xs rounded-lg hover:bg-red-500/10 transition-colors">Decline</button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+        <!-- Primary Command Area (Left 2 Columns) -->
+        <div class="lg:col-span-2 space-y-16">
+            <!-- Active Operations -->
+            <section>
+                <div class="mb-8">
+                    <h2 class="text-2xl font-black flex items-center gap-3 mb-2">
+                        <i class="fas fa-map-marked-alt text-primary"></i>
+                        Active Operations
+                    </h2>
+                    <p class="text-slate-400 text-sm">Join a season and start your journey to the Hall of Fame.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {% for cohort in active_cohorts %}
+                    <div
+                        class="glass p-6 rounded-2xl flex flex-col gap-6 hover-lift border-white/5 hover:border-primary/30 transition-all group">
+                        <div class="flex justify-between items-start">
+                            <span
+                                class="px-3 py-1 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest rounded-full border border-primary/20">
+                                {{ cohort.get_status_display }}
+                            </span>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-black mb-2 group-hover:text-primary transition-colors text-white">{{
+                                cohort.name }}</h3>
+                            <p class="text-slate-400 text-sm leading-relaxed">{{ cohort.description|truncatewords:15 }}
+                            </p>
+                        </div>
+
+                        <div class="mt-auto pt-6 border-t border-white/5 grid grid-cols-2 gap-4">
+                            <div>
+                                <span class="block text-[10px] uppercase text-slate-500 font-black mb-1">Launch</span>
+                                <span class="text-sm font-bold text-slate-200">{{ cohort.start_date|date:"M d" }}</span>
+                            </div>
+                            <div class="text-right">
+                                <span
+                                    class="block text-[10px] uppercase text-slate-500 font-black mb-1 text-right">Enlist
+                                    By</span>
+                                <span class="text-sm font-bold text-slate-200">{{ cohort.closes_at|date:"M d" }}</span>
+                            </div>
+                        </div>
+
+                        {% if profile in cohort.participants.all %}
+                        <div class="flex gap-3 mt-2">
+                            <div
+                                class="flex-1 px-4 py-2 border border-green-500/30 bg-green-500/5 text-green-400 text-xs font-black uppercase text-center rounded-xl">
+                                Enrolled</div>
+                            <a href="{% url 'brackets' cohort.id %}"
+                                class="px-4 py-2 border border-secondary/30 text-secondary hover:bg-secondary/10 rounded-xl transition-colors"
+                                title="View Bracket">
+                                <i class="fas fa-sitemap"></i>
+                            </a>
+                        </div>
+                        {% else %}
+                        <a href="{% url 'join_cohort' cohort.id %}"
+                            class="w-full py-3 bg-primary/10 hover:bg-primary text-primary hover:text-slate-900 font-black text-xs uppercase tracking-widest text-center rounded-xl transition-all mt-2">Enlist
+                            in Season</a>
+                        {% endif %}
+                    </div>
+                    {% empty %}
+                    <div class="col-span-full glass p-12 text-center rounded-2xl">
+                        <i class="fas fa-ghost text-4xl text-slate-600 mb-4 block"></i>
+                        <p class="text-slate-400 font-medium">No active operations detected in your sector.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <!-- Squad Commands -->
+            <section>
+                <div class="mb-8">
+                    <h2 class="text-2xl font-black flex items-center gap-3 mb-2">
+                        <i class="fas fa-users-cog text-secondary"></i>
+                        Squad Commands
+                    </h2>
+                    <p class="text-slate-400 text-sm">Coordinate with your units and manage squad memberships.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {% for squad in user_squads %}
+                    <div
+                        class="glass p-6 rounded-2xl flex items-center justify-between group hover:bg-white/5 transition-colors">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-12 h-12 bg-secondary/10 rounded-xl flex items-center justify-center text-secondary">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-black italic uppercase tracking-tighter text-white">{{ squad.name }}
+                                </h4>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">{{
+                                        squad.game_mode.name }}</span>
+                                    <span class="w-1 h-1 rounded-full bg-slate-700"></span>
+                                    <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">{{
+                                        squad.players.count }}/{{ squad.game_mode.max_players }} OPS</span>
+                                </div>
+                                <!-- Readiness Meter -->
+                                <div class="mt-3 space-y-2">
+                                    {% for ready in squad_readiness %}
+                                    {% if ready.squad.id == squad.id %}
+                                    <div class="flex items-center gap-2">
+                                        <div class="text-[8px] font-black text-slate-600 uppercase tracking-tighter">{{
+                                            ready.cohort.name }}:</div>
+                                        <div class="flex-1 h-1 bg-slate-800 rounded-full overflow-hidden w-24">
+                                            <div class="h-full {% if ready.is_ready %}bg-green-500{% else %}bg-amber-500{% endif %} shadow-[0_0_8px_rgba(245,158,11,0.5)]"
+                                                style="width: {% widthratio ready.paid_count ready.total_needed 100 %}%">
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="text-[8px] font-black {% if ready.is_ready %}text-green-500{% else %}text-amber-500{% endif %}">
+                                            {% if ready.is_ready %}READY{% else %}{{ ready.paid_count }}/{{
+                                            ready.total_needed }} PAID{% endif %}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <a href="{% url 'manage_squad' squad.id %}"
+                            class="px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all">
+                            Manage
+                        </a>
+                    </div>
+                    {% empty %}
+                    <div class="col-span-full glass p-8 text-center rounded-2xl border-dashed border-white/10">
+                        <p class="text-slate-500 text-sm mb-4 italic">Independent Operative. No tactical squad
+                            affiliations.</p>
+                        <a href="{% url 'create_squad' %}"
+                            class="inline-flex items-center gap-2 text-secondary hover:text-white transition-colors text-sm font-black uppercase tracking-widest">
+                            <i class="fas fa-shield-plus"></i> Initialize Squad
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <!-- Operational Formats -->
+            <section>
+                <div class="mb-8">
+                    <h2 class="text-2xl font-black flex items-center gap-3 mb-2 text-red-500">
+                        <i class="fas fa-crosshairs"></i>
+                        Operational Formats
+                    </h2>
+                    <p class="text-slate-400 text-sm">Master every mode and dominate the leaderboards.</p>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {% for mode in game_modes %}
+                    <a href="{% url 'gamemode_detail' mode.id %}"
+                        class="glass p-5 rounded-xl text-center flex flex-col items-center gap-4 hover:bg-white/5 transition-colors group">
+                        <div
+                            class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary text-xl group-hover:scale-110 transition-transform">
+                            <i class="fas {{ mode.icon|default:'fa-gamepad' }}"></i>
+                        </div>
+                        <h4 class="font-bold text-xs uppercase tracking-widest text-white">{{ mode.name }}</h4>
+                        <div class="text-sm font-black text-primary">KSh {{ mode.amount }}</div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </section>
+        </div>
+
+        <!-- Tactical Intelligence (Sidebar/Right) -->
+        <div class="space-y-12">
+            <!-- Upcoming Deployments -->
+            <section>
+                <h3 class="text-sm font-black uppercase tracking-widest text-slate-500 mb-6 flex items-center gap-2">
+                    <i class="fas fa-radar text-primary"></i> Upcoming Deployments
+                </h3>
+
+                <div class="space-y-6">
+                    <div class="glass p-6 rounded-2xl space-y-4">
+                        <h4
+                            class="text-[10px] font-black uppercase text-slate-500 tracking-widest flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-primary rounded-full"></span> Solo Matches
+                        </h4>
+                        {% for fixture in solo_fixtures %}
+                        <div
+                            class="p-4 bg-white/5 rounded-xl border-l-2 border-primary hover:bg-white/10 transition-colors">
+                            <div class="font-bold text-sm text-white">{{ fixture.stage.name }}</div>
+                            <div class="text-[10px] text-slate-400 font-bold mt-1 uppercase tracking-wider">{{
+                                fixture.match_date|date:"M d, H:i" }}</div>
+                        </div>
+                        {% empty %}
+                        <p class="text-center text-xs text-slate-600 italic py-2">No upcoming solo sorties.</p>
+                        {% endfor %}
+                    </div>
+
+                    <div class="glass p-6 rounded-2xl space-y-4">
+                        <h4
+                            class="text-[10px] font-black uppercase text-slate-500 tracking-widest flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-secondary rounded-full"></span> Group Battles
+                        </h4>
+                        {% for fixture in team_fixtures %}
+                        <div
+                            class="p-4 bg-white/5 rounded-xl border-l-2 border-secondary hover:bg-white/10 transition-colors">
+                            <div class="font-bold text-sm text-white">{{ fixture.stage.name }}</div>
+                            <div class="text-[10px] text-slate-400 mt-1 uppercase tracking-tight truncate">
+                                {% for team in fixture.teamups.all %}
+                                {{ team.name }}{% if not forloop.last %} <span class="text-white/20 mx-1">vs</span>
+                                {%endif %}
+                                {% endfor %}
+                            </div>
+                            <div class="text-[10px] text-slate-500 font-bold mt-2">{{ fixture.match_date|date:"H:i" }}
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-center text-xs text-slate-600 italic py-2">No upcoming group engagements.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recent Intel -->
+            <section>
+                <h3 class="text-sm font-black uppercase tracking-widest text-slate-500 mb-6 flex items-center gap-2">
+                    <i class="fas fa-history text-green-500"></i> Recent Intel
+                </h3>
+
+                <div class="glass rounded-2xl overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="bg-white/5">
+                                <th class="text-[10px] font-black uppercase text-slate-500 p-4">Operation</th>
+                                <th class="text-[10px] font-black uppercase text-slate-500 p-4">Rank</th>
+                                <th class="text-[10px] font-black uppercase text-slate-500 p-4">XP</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5">
+                            {% for stat in recent_solo_results %}
+                            <tr class="hover:bg-white/5 transition-colors">
+                                <td class="p-4">
+                                    <div class="text-xs font-bold text-white">{{ stat.round_instance.stage.name }}
+                                        (Solo)</div>
+                                </td>
+                                <td class="p-4">
+                                    <span class="text-primary font-black">#{{ stat.rank }}</span>
+                                </td>
+                                <td class="p-4 text-amber-400 font-black">
+                                    +{{ stat.xp }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% for stat in recent_team_results %}
+                            <tr class="hover:bg-white/5 transition-colors">
+                                <td class="p-4">
+                                    <div class="text-xs font-bold text-white">{{ stat.team.name }}</div>
+                                </td>
+                                <td class="p-4">
+                                    <span class="text-secondary font-black">#{{ stat.rank }}</span>
+                                </td>
+                                <td class="p-4 text-amber-400 font-black">
+                                    +{{ stat.xp }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% if not recent_solo_results and not recent_team_results %}
+                            <tr>
+                                <td colspan="3" class="p-8 text-center text-xs text-slate-600 italic">No recent combat
+                                    data found.</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,112 @@
+{% extends 'home/base.html' %}
+{% load static %}
+
+{% block title %}Elite Competitions | Online Tournament Platform{% endblock %}
+
+{% block navbar %}
+<!-- Override navbar if we want a different look for landing, but currently base.html navbar is great -->
+{{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="-mt-32 space-y-32">
+    <!-- Hero Section -->
+    <section class="min-h-screen flex items-center relative overflow-hidden px-4">
+        <!-- Background Orbs -->
+        <div class="absolute top-1/4 -left-20 w-96 h-96 bg-primary/20 blur-[120px] rounded-full -z-10 animate-pulse">
+        </div>
+        <div class="absolute bottom-1/4 -right-20 w-96 h-96 bg-secondary/20 blur-[120px] rounded-full -z-10 animate-pulse"
+            style="animation-delay: 1s;"></div>
+
+        <div class="max-w-4xl space-y-8">
+            <h1
+                class="text-6xl md:text-8xl font-black italic tracking-tighter leading-none bg-gradient-to-r from-white via-white to-primary/50 bg-clip-text text-transparent">
+                ELITE <span class="text-primary italic">COD </span> TOURNAMENTS <br>
+                IN KENYA.
+            </h1>
+            <p class="text-xl md:text-2xl text-slate-400 font-medium max-w-2xl leading-relaxed">
+                Join the premier Call of Duty competitive platform for Kenya gamers. Register, compete, and climb the
+                ranks to win big.
+            </p>
+            <div class="flex flex-wrap gap-4 pt-4">
+                <a href="{% url 'register' %}"
+                    class="px-10 py-5 bg-primary hover:bg-primary-hover text-slate-950 font-black text-lg uppercase tracking-widest rounded-2xl transition-all shadow-2xl shadow-primary/20 hover:scale-105">
+                    Start Competing
+                </a>
+                <a href="#features"
+                    class="px-10 py-5 border border-white/10 hover:bg-white/5 text-white font-black text-lg uppercase tracking-widest rounded-2xl transition-all">
+                    Intel Briefing
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="space-y-16">
+        <div class="text-center space-y-4">
+            <h2 class="text-4xl md:text-5xl font-black italic uppercase tracking-tighter">Why Choose Elite?</h2>
+            <p class="text-slate-500 font-medium text-lg">The ultimate platform for mobile and PC gamers.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="glass p-10 rounded-[2.5rem] border-white/5 hover:border-primary/30 transition-all group">
+                <div
+                    class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary text-3xl mb-8 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-gamepad"></i>
+                </div>
+                <h3 class="text-2xl font-black text-white mb-4 uppercase italic">Multi-Mode Support</h3>
+                <p class="text-slate-400 leading-relaxed font-medium">Compete in Solo, Duo, Squads, or Team Deathmatch
+                    across your favorite titles with calibrated matchmaking.</p>
+            </div>
+
+            <div class="glass p-10 rounded-[2.5rem] border-white/5 hover:border-secondary/30 transition-all group">
+                <div
+                    class="w-16 h-16 bg-secondary/10 rounded-2xl flex items-center justify-center text-secondary text-3xl mb-8 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-money-bill-transfer"></i>
+                </div>
+                <h3 class="text-2xl font-black text-white mb-4 uppercase italic">Instant M-Pesa</h3>
+                <p class="text-slate-400 leading-relaxed font-medium">Automated registration and instant prize
+                    withdrawals via M-Pesa integration. Zero delays, full transparency.</p>
+            </div>
+
+            <div class="glass p-10 rounded-[2.5rem] border-white/5 hover:border-amber-400/30 transition-all group">
+                <div
+                    class="w-16 h-16 bg-amber-400/10 rounded-2xl flex items-center justify-center text-amber-400 text-3xl mb-8 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3 class="text-2xl font-black text-white mb-4 uppercase italic">Live Leaderboards</h3>
+                <p class="text-slate-400 leading-relaxed font-medium">Track your performance and see where you stand
+                    among the best in the country with our real-time XP engine.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section
+        class="glass p-12 md:p-24 rounded-[3rem] text-center space-y-8 relative overflow-hidden bg-gradient-to-br from-primary/10 via-transparent to-secondary/10">
+        <div class="relative z-10">
+            <h2 class="text-5xl md:text-6xl font-black italic tracking-tighter uppercase mb-6">Ready to Enlist?</h2>
+            <p class="text-slate-400 text-lg max-w-xl mx-auto font-medium">Join thousands of Kenyan warriors already
+                competing for glory and rewards.</p>
+            <div class="pt-8">
+                <a href="{% url 'register' %}"
+                    class="px-12 py-6 bg-white text-slate-950 font-black text-xl uppercase tracking-widest rounded-2xl hover:bg-primary transition-colors inline-block shadow-2xl">
+                    Create Account
+                </a>
+            </div>
+        </div>
+        <!-- Decorative ghost icon -->
+        <i class="fas fa-crosshairs absolute -bottom-10 -right-10 text-[200px] text-white/5 -rotate-12"></i>
+    </section>
+
+    <footer class="py-20 border-t border-white/5 text-center">
+        <div class="flex flex-col items-center gap-6">
+            <div class="text-2xl font-black tracking-wider text-white">
+                <span class="text-primary italic">ELITE</span> TOURNAMENTS
+            </div>
+            <p class="text-slate-600 font-bold text-xs uppercase tracking-[0.3em]">&copy; 2026 Elite Tournament
+                Platform. All rights reserved.</p>
+        </div>
+    </footer>
+</div>
+{% endblock %}

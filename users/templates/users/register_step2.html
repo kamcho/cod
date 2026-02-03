@@ -1,0 +1,63 @@
+{% extends 'home/base.html' %}
+{% load static %}
+
+{% block title %}Complete Profile | Elite Tournaments{% endblock %}
+
+{% block extra_css %}
+<!-- HTMX for tag availability check -->
+<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-[60vh] flex flex-col items-center justify-center p-4">
+    <div
+        class="glass max-w-md w-full p-8 md:p-12 rounded-[2.5rem] shadow-2xl space-y-8 relative overflow-hidden border-white/5">
+        <!-- Decorative ghost icon -->
+        <i class="fas fa-fingerprint absolute -top-4 -right-4 text-8xl text-white/5 -rotate-12"></i>
+
+        <div class="text-center relative z-10">
+            <h2 class="text-3xl font-black italic tracking-tighter uppercase mb-2">Set Your Gamer ID</h2>
+            <p class="text-slate-500 font-medium text-sm">Operation security protocols require a unique ID.</p>
+        </div>
+
+        {% if messages %}
+        <div class="space-y-2">
+            {% for message in messages %}
+            <div class="px-4 py-3 rounded-xl text-xs font-bold bg-primary/10 text-primary border border-primary/20">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="post" class="space-y-6 relative z-10">
+            {% csrf_token %}
+
+            <div class="space-y-2">
+                <label for="id_gamer_tag"
+                    class="block text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">
+                    Operative Gamer Tag
+                </label>
+                <div class="relative group">
+                    <div
+                        class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-600 group-focus-within:text-primary transition-colors text-sm">
+                        <i class="fas fa-id-badge"></i>
+                    </div>
+                    <input type="text" name="gamer_tag" id="id_gamer_tag" required hx-get="{% url 'check_gamer_tag' %}"
+                        hx-trigger="keyup changed delay:500ms" hx-target="#gamer-tag-status"
+                        class="w-full bg-slate-900/50 border border-white/10 rounded-xl pl-12 pr-4 py-4 text-sm font-bold text-white focus:outline-none focus:border-primary focus:bg-slate-900/80 transition-all placeholder:text-slate-700"
+                        placeholder="Enter your unique gamer tag">
+                </div>
+            </div>
+
+            <div id="gamer-tag-status"
+                class="min-h-12 flex items-center justify-center bg-white/[0.02] rounded-xl border border-white/5 p-4 transition-all">
+                <div class="text-[10px] font-black text-slate-600 uppercase tracking-widest flex items-center gap-2">
+                    <i class="fas fa-circle-notch animate-spin text-[8px]"></i>
+                    Awaiting Target Input...
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,204 @@
+{% extends 'home/base.html' %}
+{% load static %}
+
+{% block title %}{{ player.gamer_tag }} Analytics | Elite Tournaments{% endblock %}
+
+{% block content %}
+<div class="space-y-16 max-w-full">
+    <!-- Player Header -->
+    <header class="flex flex-col md:flex-row items-center gap-8 pb-12 border-b border-white/5">
+        <div class="relative group">
+            <div
+                class="w-32 h-32 rounded-full border-4 border-primary/30 p-1 group-hover:border-primary transition-all duration-500 bg-slate-900 overflow-hidden shadow-2xl">
+                {% if profile.avatar %}
+                <img src="{{ profile.avatar.url }}" class="w-full h-full object-cover">
+                {% else %}
+                <div class="w-full h-full flex items-center justify-center text-4xl text-primary bg-slate-800">
+                    <i class="fas fa-user-ninja"></i>
+                </div>
+                {% endif %}
+            </div>
+            <div
+                class="absolute -bottom-2 -right-2 w-10 h-10 bg-slate-900 border-4 border-slate-950 rounded-full flex items-center justify-center text-primary text-sm shadow-xl">
+                <i class="fas fa-chart-line"></i>
+            </div>
+        </div>
+
+        <div class="text-center md:text-left space-y-2">
+            <h1 class="text-5xl font-black italic tracking-tighter uppercase leading-none">{{ player.gamer_tag }}</h1>
+            <p class="text-slate-400 font-medium text-lg leading-none uppercase tracking-widest text-[10px]">{{ player.county|default:"Unknown Sector" }} <span class="mx-2 opacity-20">|</span> Career Tactical Analytics</p>
+        </div>
+    </header>
+
+    <!-- Highlight Grid -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="glass p-8 rounded-3xl text-center group hover:border-primary/40 transition-all">
+            <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Solo Eliminations</div>
+            <div class="text-4xl font-black text-primary group-hover:scale-110 transition-transform mb-2">{{ solo_stats.total_kills|default:0 }}</div>
+            <i class="fas fa-crosshairs text-slate-700 group-hover:text-primary transition-colors"></i>
+        </div>
+        <div class="glass p-8 rounded-3xl text-center group hover:border-secondary/40 transition-all">
+            <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Squad Eliminations</div>
+            <div class="text-4xl font-black text-secondary group-hover:scale-110 transition-transform mb-2">{{ team_stats.total_kills|default:0 }}</div>
+            <i class="fas fa-users text-slate-700 group-hover:text-secondary transition-colors"></i>
+        </div>
+        <div class="glass p-8 rounded-3xl text-center group hover:border-amber-400/40 transition-all">
+            <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Accumulated XP</div>
+            <div class="text-4xl font-black text-amber-400 group-hover:scale-110 transition-transform mb-2">{{ solo_stats.total_xp|add:team_stats.total_xp|default:0 }}</div>
+            <i class="fas fa-star text-slate-700 group-hover:text-amber-400 transition-colors"></i>
+        </div>
+        <div class="glass p-8 rounded-3xl text-center group hover:border-green-500/40 transition-all">
+            <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Deployment Wins</div>
+            <div class="text-4xl font-black text-green-500 group-hover:scale-110 transition-transform mb-2">{{ solo_stats.wins|add:team_stats.wins|default:0 }}</div>
+            <i class="fas fa-trophy text-slate-700 group-hover:text-green-500 transition-colors"></i>
+        </div>
+    </div>
+
+    <!-- Tabs Container -->
+    <div class="space-y-8">
+        <div class="flex flex-wrap gap-2 border-b border-white/5 pb-1">
+            <button onclick="showTab(event, 'solo')" class="tab-btn active px-8 py-4 text-xs font-black uppercase tracking-widest text-slate-500 border-b-4 border-transparent hover:text-white transition-all" data-tab="solo">Solo Operations</button>
+            <button onclick="showTab(event, 'team')" class="tab-btn px-8 py-4 text-xs font-black uppercase tracking-widest text-slate-500 border-b-4 border-transparent hover:text-white transition-all" data-tab="team">Squad Battles</button>
+            <button onclick="showTab(event, 'teams-list')" class="tab-btn px-8 py-4 text-xs font-black uppercase tracking-widest text-slate-500 border-b-4 border-transparent hover:text-white transition-all" data-tab="teams-list">Unit Affiliations</button>
+        </div>
+
+        <div id="solo" class="tab-pane block">
+            <div class="glass rounded-3xl overflow-hidden border-white/5 shadow-2xl">
+                <div class="p-8 border-b border-white/5 bg-white/[0.02]">
+                    <h3 class="text-xl font-black uppercase italic tracking-tighter">Tactical Deployment Logs</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left min-w-[600px]">
+                        <thead>
+                            <tr class="bg-white/5">
+                                <th class="px-8 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">Date</th>
+                                <th class="px-8 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">Operation Stage</th>
+                                <th class="px-8 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">Final Rank</th>
+                                <th class="px-8 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-center">Kills</th>
+                                <th class="px-8 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-center">Damage</th>
+                                <th class="px-8 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-right">XP Yield</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5">
+                            {% for stat in recent_solo %}
+                            <tr class="hover:bg-white/5 transition-colors group">
+                                <td class="px-8 py-6 text-xs font-bold text-slate-400">{{ stat.round_instance.match_date|date:"M d, Y" }}</td>
+                                <td class="px-8 py-6 text-sm font-black text-white italic">{{ stat.round_instance.stage.name }}</td>
+                                <td class="px-8 py-6"><span class="text-lg font-black text-primary italic">#{{ stat.rank }}</span></td>
+                                <td class="px-8 py-6 text-center text-sm font-bold text-slate-200">{{ stat.kills }}</td>
+                                <td class="px-8 py-6 text-center text-sm font-bold text-slate-400">{{ stat.damage }}</td>
+                                <td class="px-8 py-6 text-right"><span class="text-sm font-black text-primary">+{{ stat.xp }}</span></td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="p-20 text-center text-slate-600 italic font-medium">No tactical solo deployments recorded.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="team" class="tab-pane hidden">
+            <div class="glass rounded-3xl overflow-hidden border-white/5 shadow-2xl">
+                <div class="p-8 border-b border-white/5 bg-white/[0.02]">
+                    <h3 class="text-xl font-black uppercase italic tracking-tighter">Squad Engagement History</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left min-w-[600px]">
+                        <thead>
+                            <tr class="bg-white/5">
+                                <th class="px-8 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                                    Date</th>
+                                <th class="px-8 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                                    Assigned Squad</th>
+                                <th class="px-8 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                                    Operation Stage</th>
+                                <th class="px-8 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                                    Squad Rank</th>
+                                <th
+                                    class="px-8 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-center">
+                                    Kills</th>
+                                <th
+                                    class="px-8 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-right">
+                                    XP Yield</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5">
+                            {% for stat in recent_team %}
+                            <tr class="hover:bg-white/5 transition-colors group">
+                                <td class="px-8 py-6 text-xs font-bold text-slate-400">{{ stat.round_instance.match_date|date:"M d, Y" }}</td>
+                                <td class="px-8 py-6"><span class="text-sm font-black text-secondary uppercase">{{ stat.team.name }}</span></td>
+                                <td class="px-8 py-6 text-sm font-bold text-white italic font-medium">{{ stat.round_instance.stage.name }}</td>
+                                <td class="px-8 py-6"><span class="text-lg font-black text-green-500 italic">#{{ stat.team_rank }}</span></td>
+                                <td class="px-8 py-6 text-center text-sm font-bold text-slate-200">{{ stat.kills }}</td>
+                                <td class="px-8 py-6 text-right"><span class="text-sm font-black text-primary">+{{ stat.xp }}</span></td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="p-20 text-center text-slate-600 italic font-medium">No squad engagement battles recorded.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="teams-list" class="tab-pane hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for team in teams %}
+                <div class="glass p-8 rounded-[2rem] border-white/5 hover:border-secondary/40 transition-all group relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity"><i class="fas fa-shield-alt text-6xl"></i></div>
+                    <div class="text-[10px] font-black text-secondary uppercase tracking-widest mb-2 italic">{{ team.game_mode.name }} Unit</div>
+                    <h3 class="text-2xl font-black text-white mb-6 uppercase tracking-tighter">{{ team.name }}</h3>
+
+                    <div class="flex flex-wrap gap-2">
+                        {% for tplayer in team.players.all %}
+                        <a href="{% url 'player_analytics' tplayer.gamer_tag %}" class="px-2 py-1 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-[10px] font-bold text-slate-400 hover:text-secondary transition-all">{{ tplayer.gamer_tag }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-span-full glass p-20 text-center rounded-[3rem] border-dashed border-white/10">
+                    <div class="bg-white/5 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"><i class="fas fa-user-slash text-slate-700"></i></div>
+                    <p class="text-slate-500 font-medium italic">Independent Operative - No tactical squad affiliations detected.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style type="text/tailwindcss">
+    @layer components {
+        .tab-btn.active {
+            @apply text-primary border-primary;
+        }
+    }
+</style>
+
+<script>
+    function showTab(e, tabId) {
+        // Hide all panes
+        document.querySelectorAll('.tab-pane').forEach(pane => {
+            pane.classList.add('hidden');
+            pane.classList.remove('block');
+        });
+
+        // Remove active class from all buttons
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        // Show current pane
+        const targetPane = document.getElementById(tabId);
+        targetPane.classList.remove('hidden');
+        targetPane.classList.add('block');
+
+        // Add active class to clicked button
+        e.currentTarget.classList.add('active');
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,120 @@
+{% extends 'home/base.html' %}
+{% load static %}
+
+{% block title %}Global Leaderboard | Elite Tournaments{% endblock %}
+
+{% block extra_head %}
+<!-- HTMX for dynamic search -->
+<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-12">
+    <header class="text-center max-w-3xl mx-auto space-y-4">
+        <div
+            class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-[0.2em] animate-pulse">
+            <i class="fas fa-signal"></i> Live Classification
+        </div>
+        <h1
+            class="text-5xl lg:text-7xl font-black tracking-tighter italic uppercase leading-tight bg-gradient-to-b from-white to-white/40 bg-clip-text text-transparent">
+            Hall of Fame
+        </h1>
+        <p class="text-slate-500 font-medium italic text-sm">Real-time tactical performance rankings. Only the elite
+            remain.</p>
+    </header>
+
+    <!-- Unified Filter & Search Bar -->
+    <div class="glass p-2 rounded-[2rem] shadow-2xl sticky top-24 z-30 transition-all duration-500" id="filterBar">
+        <form method="GET" hx-get="{% url 'leaderboard' %}" hx-target="#leaderboard-results"
+            hx-trigger="change from:select, keyup changed delay:500ms from:input" hx-push-url="true"
+            class="flex flex-col lg:flex-row items-stretch lg:items-center gap-2">
+
+            <!-- Search Input -->
+            <div class="flex-1 relative group p-1">
+                <div
+                    class="absolute inset-y-0 left-5 flex items-center pointer-events-none text-slate-500 group-focus-within:text-primary transition-colors text-sm">
+                    <i class="fas fa-search"></i>
+                </div>
+                <input type="text" name="q" value="{{ q|default:'' }}" placeholder="Scan for Operative Gamer Tag..."
+                    class="w-full bg-slate-950/40 border border-white/5 rounded-2xl pl-12 pr-4 py-4 text-sm font-bold text-white focus:outline-none focus:border-primary/50 focus:bg-slate-950/80 transition-all placeholder:text-slate-700 uppercase tracking-wider">
+            </div>
+
+            <div class="h-px lg:h-8 lg:w-px bg-white/10 mx-2"></div>
+
+            <!-- Dropdown Filters -->
+            <div class="flex flex-wrap lg:flex-nowrap items-center gap-2 p-1">
+                <div class="relative min-w-[140px]">
+                    <select name="mode"
+                        class="w-full bg-slate-950/40 border border-white/5 rounded-xl px-4 py-3.5 text-[10px] font-black uppercase tracking-widest appearance-none focus:outline-none focus:border-primary/50 transition-all cursor-pointer text-slate-400 focus:text-white">
+                        <option value="">All Modes</option>
+                        {% for mode in game_modes %}
+                    <option value="{{ mode.id }}" {% if selected_mode == mode.id|stringformat:"s" %}selected{% endif %}>{{ mode.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <i
+                        class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-600 pointer-events-none text-[8px]"></i>
+                </div>
+
+                <div class="relative min-w-[140px]">
+                    <select name="cohort"
+                        class="w-full bg-slate-950/40 border border-white/5 rounded-xl px-4 py-3.5 text-[10px] font-black uppercase tracking-widest appearance-none focus:outline-none focus:border-primary/50 transition-all cursor-pointer text-slate-400 focus:text-white">
+                        <option value="">All Cohorts</option>
+                        {% for cohort in cohorts %}
+                    <option value="{{ cohort.id }}" {% if selected_cohort == cohort.id|stringformat:"s" %}selected{% endif %}>{{ cohort.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <i
+                        class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-600 pointer-events-none text-[8px]"></i>
+                </div>
+
+                <div class="relative min-w-[160px]">
+                    <select name="stage"
+                        class="w-full bg-slate-950/40 border border-white/5 rounded-xl px-4 py-3.5 text-[10px] font-black uppercase tracking-widest appearance-none focus:outline-none focus:border-primary/50 transition-all cursor-pointer text-slate-400 focus:text-white">
+                        <option value="">All Stages</option>
+                        {% for stage in stages %}
+                    <option value="{{ stage.id }}" {% if selected_stage == stage.id|stringformat:"s" %}selected{% endif %}>{{ stage.name }} ({{ stage.game_mode.name }})</option>
+                        {% endfor %}
+                    </select>
+                    <i
+                        class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-600 pointer-events-none text-[8px]"></i>
+                </div>
+
+                <a href="{% url 'leaderboard' %}"
+                    class="w-12 h-12 flex items-center justify-center bg-white/5 border border-white/5 rounded-xl text-slate-500 hover:text-white hover:bg-white/10 transition-all"
+                    title="Reset Filters">
+                    <i class="fas fa-sync-alt text-xs"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Leaderboard Results Container -->
+    <div id="leaderboard-results" class="transition-opacity duration-300">
+        {% include 'home/partials/leaderboard_results.html' %}
+    </div>
+</div>
+
+<script>
+    // Add HTMX indicators or loading states
+    document.body.addEventListener('htmx:beforeRequest', function (evt) {
+        document.getElementById('leaderboard-results').style.opacity = '0.5';
+    });
+    document.body.addEventListener('htmx:afterRequest', function (evt) {
+        document.getElementById('leaderboard-results').style.opacity = '1';
+    });
+
+    // Scroll effect for filter bar
+    window.addEventListener('scroll', () => {
+        const bar = document.getElementById('filterBar');
+        if (window.scrollY > 150) {
+            bar.classList.add('lg:scale-95', 'bg-slate-950/80', 'backdrop-blur-2xl');
+            bar.classList.remove('p-2');
+            bar.classList.add('p-1');
+        } else {
+            bar.classList.remove('lg:scale-95', 'bg-slate-950/80', 'backdrop-blur-2xl');
+            bar.classList.remove('p-1');
+            bar.classList.add('p-2');
+        }
+    });
+</script>
+{% endblock %}
