@@ -837,7 +837,7 @@ def mark_notification_read(request, notification_id):
 
 def bracket_view(request, cohort_id):
     cohort = get_object_or_404(Cohort, id=cohort_id)
-    stages = GameStage.objects.filter(fixtures__cohort=cohort).distinct().order_by('order')
+    stages = GameStage.objects.filter(cohort=cohort).order_by('order')
     
     bracket_data = []
     for stage in stages:

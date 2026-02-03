@@ -15,7 +15,8 @@
             {% for item in bracket_data %}
             <div class="flex-1 min-w-[300px] space-y-6 snap-start">
                 <div class="text-center py-4 bg-white/5 border-b-2 border-primary rounded-t-xl">
-                    <h3 class="text-xs font-black uppercase tracking-widest text-white leading-none">{{ item.stage.name }}</h3>
+                    <h3 class="text-xs font-black uppercase tracking-widest text-white leading-none">{{ item.stage.name
+                        }}</h3>
                 </div>
 
                 <div class="space-y-4">
@@ -52,6 +53,20 @@
                         </div>
                     </div>
                     {% endfor %}
+
+                    {% if not item.solo_fixtures and not item.team_fixtures %}
+                    <div
+                        class="glass p-8 rounded-2xl border-dashed border-white/10 flex flex-col items-center justify-center text-center space-y-4 opacity-60">
+                        <div class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-slate-600">
+                            <i class="fas fa-lock text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Classification
+                                TBD</p>
+                            <p class="text-[10px] font-bold text-slate-600 italic mt-1">Awaiting Assignments</p>
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}
