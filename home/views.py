@@ -818,6 +818,28 @@ def robots_txt(request):
         "Sitemap: https://cod.arrotechsolutions.com/sitemap.xml"
     ]
     return HttpResponse("\n".join(lines), content_type="text/plain")
+
+@csrf_exempt
+def sitemap_view(request):
+    from django.contrib.sitemaps.views import sitemap as django_sitemap
+    from .sitemaps import StaticViewSitemap, GameModeSitemap
+    
+    sitemaps = {
+        'static': StaticViewSitemap,
+        'gamemodes': GameModeSitemap,
+    }
+    
+    response = django_sitemap(request, sitemaps=sitemaps)
+    
+    # Force clean headers for Google Crawler
+    if 'X-Robots-Tag' in response:
+        del response['X-Robots-Tag']
+    
+    # Remove Vary: Cookie which can confuse crawlers on static sitemaps
+    if 'Vary' in response:
+        del response['Vary']
+        
+    return response
     
 @login_required
 def notifications_view(request):
