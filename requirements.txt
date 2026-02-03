@@ -4,3 +4,4 @@ mysqlclient
 requests
 whitenoise
 Pillow
+openai

@@ -8,41 +8,62 @@
 {{ block.super }}
 {% endblock %}
 
+{% block main_class %}w-full{% endblock %}
+
 {% block content %}
-<div class="-mt-32 space-y-32">
+<div class="-mt-32 space-y-32 w-full">
     <!-- Hero Section -->
-    <section class="min-h-screen flex items-center relative overflow-hidden px-4">
-        <!-- Background Orbs -->
-        <div class="absolute top-1/4 -left-20 w-96 h-96 bg-primary/20 blur-[120px] rounded-full -z-10 animate-pulse">
+    <section class="min-h-screen flex items-center relative overflow-hidden px-4 -mt-32 pt-32">
+        <!-- Background Image -->
+        <div class="absolute inset-0 -z-20">
+            <img src="{% static 'img/hero-bg.png' %}" alt="COD Hero" class="w-full h-full object-cover opacity-60">
+            <div class="absolute inset-0 bg-gradient-to-r from-[#0f172a] via-[#0f172a]/80 to-transparent"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-transparent to-transparent"></div>
         </div>
-        <div class="absolute bottom-1/4 -right-20 w-96 h-96 bg-secondary/20 blur-[120px] rounded-full -z-10 animate-pulse"
+
+        <!-- Background Orbs -->
+        <div class="absolute top-1/4 -left-20 w-96 h-96 bg-primary/10 blur-[150px] rounded-full -z-10 animate-pulse">
+        </div>
+        <div class="absolute bottom-1/4 -right-20 w-96 h-96 bg-secondary/10 blur-[150px] rounded-full -z-10 animate-pulse"
             style="animation-delay: 1s;"></div>
 
-        <div class="max-w-4xl space-y-8">
-            <h1
-                class="text-6xl md:text-8xl font-black italic tracking-tighter leading-none bg-gradient-to-r from-white via-white to-primary/50 bg-clip-text text-transparent">
-                ELITE <span class="text-primary italic">COD </span> TOURNAMENTS <br>
-                IN KENYA.
-            </h1>
-            <p class="text-xl md:text-2xl text-slate-400 font-medium max-w-2xl leading-relaxed">
-                Join the premier Call of Duty competitive platform for Kenya gamers. Register, compete, and climb the
-                ranks to win big.
-            </p>
-            <div class="flex flex-wrap gap-4 pt-4">
-                <a href="{% url 'register' %}"
-                    class="px-10 py-5 bg-primary hover:bg-primary-hover text-slate-950 font-black text-lg uppercase tracking-widest rounded-2xl transition-all shadow-2xl shadow-primary/20 hover:scale-105">
-                    Start Competing
-                </a>
-                <a href="#features"
-                    class="px-10 py-5 border border-white/10 hover:bg-white/5 text-white font-black text-lg uppercase tracking-widest rounded-2xl transition-all">
-                    Intel Briefing
-                </a>
+        <div class="container mx-auto px-4 lg:px-8 max-w-7xl relative z-10">
+            <div class="max-w-4xl space-y-8">
+                <div
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border-primary/20 text-primary text-xs font-black uppercase tracking-[0.2em] mb-4">
+                    <span class="relative flex h-2 w-2">
+                        <span
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                    </span>
+                    Live Tournaments Daily
+                </div>
+                <h1
+                    class="text-6xl md:text-8xl font-black italic tracking-tighter leading-none bg-gradient-to-r from-white via-white to-slate-500 bg-clip-text text-transparent">
+                    ELITE <span class="text-primary italic">COD </span> TOURNAMENTS <br>
+                    IN KENYA.
+                </h1>
+                <p class="text-xl md:text-2xl text-slate-400 font-medium max-w-2xl leading-relaxed">
+                    Join the premier Call of Duty competitive platform for Kenya gamers. Register, compete, and climb
+                    the
+                    ranks to win big.
+                </p>
+                <div class="flex flex-wrap gap-4 pt-4">
+                    <a href="{% url 'register' %}"
+                        class="px-10 py-5 bg-primary hover:bg-primary-hover text-slate-950 font-black text-lg uppercase tracking-widest rounded-2xl transition-all shadow-2xl shadow-primary/20 hover:scale-105">
+                        Start Competing
+                    </a>
+                    <a href="#features"
+                        class="px-10 py-5 border border-white/10 hover:bg-white/5 text-white font-black text-lg uppercase tracking-widest rounded-2xl transition-all">
+                        Intel Briefing
+                    </a>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Features Section -->
-    <section id="features" class="space-y-16">
+    <section id="features" class="space-y-16 container mx-auto px-4 lg:px-8 max-w-7xl">
         <div class="text-center space-y-4">
             <h2 class="text-4xl md:text-5xl font-black italic uppercase tracking-tighter">Why Choose Elite?</h2>
             <p class="text-slate-500 font-medium text-lg">The ultimate platform for mobile and PC gamers.</p>
@@ -82,24 +103,26 @@
     </section>
 
     <!-- CTA Section -->
-    <section
-        class="glass p-12 md:p-24 rounded-[3rem] text-center space-y-8 relative overflow-hidden bg-gradient-to-br from-primary/10 via-transparent to-secondary/10">
-        <div class="relative z-10">
-            <h2 class="text-5xl md:text-6xl font-black italic tracking-tighter uppercase mb-6">Ready to Enlist?</h2>
-            <p class="text-slate-400 text-lg max-w-xl mx-auto font-medium">Join thousands of Kenyan warriors already
-                competing for glory and rewards.</p>
-            <div class="pt-8">
-                <a href="{% url 'register' %}"
-                    class="px-12 py-6 bg-white text-slate-950 font-black text-xl uppercase tracking-widest rounded-2xl hover:bg-primary transition-colors inline-block shadow-2xl">
-                    Create Account
-                </a>
+    <section class="container mx-auto px-4 lg:px-8 max-w-7xl">
+        <div
+            class="glass p-12 md:p-24 rounded-[3rem] text-center space-y-8 relative overflow-hidden bg-gradient-to-br from-primary/10 via-transparent to-secondary/10">
+            <div class="relative z-10">
+                <h2 class="text-5xl md:text-6xl font-black italic tracking-tighter uppercase mb-6">Ready to Enlist?</h2>
+                <p class="text-slate-400 text-lg max-w-xl mx-auto font-medium">Join thousands of Kenyan warriors already
+                    competing for glory and rewards.</p>
+                <div class="pt-8">
+                    <a href="{% url 'register' %}"
+                        class="px-12 py-6 bg-white text-slate-950 font-black text-xl uppercase tracking-widest rounded-2xl hover:bg-primary transition-colors inline-block shadow-2xl">
+                        Create Account
+                    </a>
+                </div>
             </div>
+            <!-- Decorative ghost icon -->
+            <i class="fas fa-crosshairs absolute -bottom-10 -right-10 text-[200px] text-white/5 -rotate-12"></i>
         </div>
-        <!-- Decorative ghost icon -->
-        <i class="fas fa-crosshairs absolute -bottom-10 -right-10 text-[200px] text-white/5 -rotate-12"></i>
     </section>
 
-    <footer class="py-20 border-t border-white/5 text-center">
+    <footer class="py-20 border-t border-white/5 text-center container mx-auto px-4 lg:px-8 max-w-7xl">
         <div class="flex flex-col items-center gap-6">
             <div class="text-2xl font-black tracking-wider text-white">
                 <span class="text-primary italic">ELITE</span> TOURNAMENTS

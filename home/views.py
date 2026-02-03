@@ -12,6 +12,7 @@ from datetime import datetime
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
+from .ai_service import ai_service
 import os
 from dotenv import load_dotenv
 
@@ -849,3 +850,19 @@ def bracket_view(request, cohort_id):
         })
     
     return render(request, 'home/brackets.html', {'cohort': cohort, 'bracket_data': bracket_data})
+@csrf_exempt
+def ai_chat_view(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            messages = data.get('messages', [])
+            
+            if not messages:
+                return JsonResponse({'error': 'No messages provided'}, status=400)
+            
+            response_text = ai_service.generate_response(messages)
+            return JsonResponse({'response': response_text})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    return JsonResponse({'error': 'Invalid request'}, status=400)

@@ -45,4 +45,5 @@ urlpatterns = [
     path('recruitment/manage-request/<int:request_id>/<str:action>/', views.manage_join_request_view, name='manage_join_request'),
     path('recruitment/deactivate-squad/<int:recruitment_id>/', views.deactivate_recruitment_view, name='deactivate_recruitment'),
     path('recruitment/deactivate-agent/', views.deactivate_free_agent_view, name='deactivate_free_agent'),
+    path('ai-chat/', views.ai_chat_view, name='ai_chat'),
 ]
