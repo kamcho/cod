@@ -64,7 +64,7 @@ media
 **/migrations/*
 !**/migrations/__init__.py
 staticfiles/
-
+migrations/
 # Flask stuff:
 instance/
 .webassets-cache

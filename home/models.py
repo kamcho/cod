@@ -85,7 +85,7 @@ class TeamUP(models.Model):
 
 
 class GameStage(models.Model):
-    cohort = models.ForeignKey('home.Cohort',default=1, on_delete=models.CASCADE, related_name='cohort_stages')
+    # cohort = models.ForeignKey('home.Cohort',default=1, on_delete=models.CASCADE, related_name='cohort_stages')
     name = models.CharField(max_length=100)
     game_mode = models.ForeignKey('home.GameMode', on_delete=models.CASCADE, related_name='stages')
     description = models.TextField(blank=True)
