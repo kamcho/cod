@@ -5,6 +5,7 @@ from .models import GameMode
 class StaticViewSitemap(sitemaps.Sitemap):
     priority = 0.8
     changefreq = 'weekly'
+    protocol = 'https'
 
     def items(self):
         return ['home', 'leaderboard', 'recruitment_center', 'login', 'register']
@@ -15,6 +16,7 @@ class StaticViewSitemap(sitemaps.Sitemap):
 class GameModeSitemap(sitemaps.Sitemap):
     priority = 0.9
     changefreq = 'monthly'
+    protocol = 'https'
 
     def items(self):
         return GameMode.objects.all()
