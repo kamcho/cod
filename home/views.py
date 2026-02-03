@@ -11,7 +11,7 @@ import base64
 from datetime import datetime
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from .ai_service import ai_service
 import os
 from dotenv import load_dotenv
@@ -815,7 +815,7 @@ def robots_txt(request):
         "Disallow: /dashboard/",
         "Disallow: /squad/",
         "Disallow: /mpesa/",
-        "Sitemap: https://elitetournaments.co.ke/sitemap.xml"
+        "Sitemap: https://cod.arrotechsolutions.com/sitemap.xml"
     ]
     return HttpResponse("\n".join(lines), content_type="text/plain")
     
