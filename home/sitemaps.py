@@ -6,6 +6,7 @@ class StaticViewSitemap(sitemaps.Sitemap):
     priority = 0.8
     changefreq = 'weekly'
     protocol = 'https'
+    domain = 'cod.arrotechsolutions.com'
 
     def items(self):
         return ['home', 'leaderboard', 'recruitment_center', 'login', 'register']
@@ -17,6 +18,7 @@ class GameModeSitemap(sitemaps.Sitemap):
     priority = 0.9
     changefreq = 'monthly'
     protocol = 'https'
+    domain = 'cod.arrotechsolutions.com'
 
     def items(self):
         return GameMode.objects.all()
